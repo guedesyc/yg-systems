@@ -151,6 +151,39 @@
     });
   }
 
+  function replaceAttributes(root, replacements) {
+    root.querySelectorAll("*").forEach((node) => {
+      ["aria-label", "alt", "placeholder", "title"].forEach((attribute) => {
+        const current = node.getAttribute(attribute);
+        if (!current) return;
+        let next = current;
+        replacements.forEach(([from, to]) => {
+          next = next.replaceAll(from, to);
+        });
+        if (next !== current) node.setAttribute(attribute, next);
+      });
+    });
+  }
+
+  function installPersonalizedName(config) {
+    const replacements = [
+      ["YG Restaurante", config.businessName],
+      ["Restaurante Demonstracao", config.businessName],
+      ["YG Bar", config.businessName],
+      ["YG Estoque e Controle", config.businessName],
+      ["YG Financeiro", config.businessName],
+      ["YG Feedbacks", config.businessName],
+      ["YG Eventos", config.businessName],
+      ["Empresa Demonstracao", config.businessName],
+      ["Bolao da Copa", config.businessName],
+    ];
+    document.querySelectorAll("[data-business-name]").forEach((node) => {
+      node.textContent = config.businessName;
+    });
+    replaceText(document.body, replacements);
+    replaceAttributes(document.body, replacements);
+  }
+
   function installBar(config) {
     replaceText(document.body, [
       ["YG Bar", config.businessName],
@@ -187,6 +220,7 @@
   function installCommon(config) {
     document.documentElement.style.setProperty("--yg-demo-color", config.brandColor);
     document.title = `${config.businessName} | ${config.product}`;
+    installPersonalizedName(config);
     document.body.insertAdjacentHTML(
       "afterbegin",
       `<aside class="yg-demo-bar">
