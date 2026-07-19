@@ -44,7 +44,7 @@ yg-systems/
 
 Estas referencias orientam a criacao das demos, mas nao devem ser abertas para o visitante final.
 Quando alguem clicar em uma demonstracao, o site deve pedir nome, logo e cor da empresa e exibir
-uma demo personalizada dentro da propria experiencia.
+uma demo personalizada em uma nova pagina do proprio site.
 
 - Restaurante: `guedesyc/https-pedir-delivery-app-hotflash-menu`
 - Eventos: `guedesyc/bolao-lemos`
@@ -52,3 +52,19 @@ uma demo personalizada dentro da propria experiencia.
 - Estoque e Controle: `guedesyc/brownie-keise`
 - Financeiro: futuro
 - Feedbacks: pendente
+
+## Fluxo de personalizacao
+
+1. O visitante escolhe um ecossistema.
+2. O site abre uma tela para informar nome da empresa, logo opcional e cor principal.
+3. A configuracao fica salva temporariamente no navegador em `localStorage`.
+4. O site abre uma nova pagina em `demos/{modelo}/index.html`.
+5. A demo carrega a configuracao e aplica nome, logo e cor por cima da base funcional daquele modelo.
+
+As demos atualmente conectadas a bases funcionais copiadas dos exemplos sao:
+
+- `demos/bar`
+- `demos/estoque`
+- `demos/eventos`
+
+As demos `restaurante`, `financeiro` e `feedbacks` existem como primeira estrutura local; podem ser substituidas por bases funcionais completas quando os respectivos repositorios/implementacoes forem definidos.

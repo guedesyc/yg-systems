@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>YG Bar | Demo personalizada</title>
+    <link rel="stylesheet" href="../shared/demo-runtime.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand" aria-label="YG Bar">
+        <span class="brand-mark">YG</span>
+        <span>
+          <strong>YG Bar</strong>
+          <small>Comandas por mesa</small>
+        </span>
+      </div>
+
+      <nav class="tabs" aria-label="Areas do sistema">
+        <button class="tab active" data-view="menu" data-role="publico adm">Card&aacute;pio</button>
+        <button class="tab" data-view="waiter" data-role="garcom adm">Gar&ccedil;om</button>
+        <button class="tab" data-view="kitchen" data-role="garcom adm">Cozinha</button>
+        <button class="tab" data-view="sessions" data-role="adm">Hist&oacute;rico</button>
+        <button class="tab" data-view="qr" data-role="adm">QR Mesas</button>
+      </nav>
+
+      <div class="auth-tools">
+        <span id="role-badge" class="role-badge">P&uacute;blico</span>
+        <button id="open-login" class="ghost-button small-button" type="button">&Aacute;rea interna</button>
+        <button id="logout-role" class="ghost-button small-button" type="button" hidden>Sair</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="view active" id="view-menu">
+        <div class="menu-hero">
+          <div>
+            <p class="eyebrow">Card&aacute;pio digital</p>
+            <h1>YG Bar</h1>
+            <p class="hero-copy">Escolha seus itens, chame o gar&ccedil;om e informe sua mesa.</p>
+          </div>
+          <div class="table-badge">
+            <span>Mesa</span>
+            <strong id="public-table-number">--</strong>
+          </div>
+        </div>
+        <div class="section-head">
+          <div>
+            <h2>Card&aacute;pio</h2>
+            <p>Itens cadastrados para a primeira vers&atilde;o do atendimento.</p>
+          </div>
+          <input id="public-menu-search" class="input" type="search" placeholder="Buscar item" />
+        </div>
+        <div id="public-menu" class="menu-categories"></div>
+      </section>
+
+      <section class="view" id="view-waiter">
+        <div class="workbench">
+          <aside class="panel tables-panel">
+            <div class="section-head compact">
+              <div>
+                <h2>Mesas</h2>
+                <p>Selecione uma mesa para lan&ccedil;ar pedidos.</p>
+              </div>
+            </div>
+            <div id="table-grid" class="table-grid"></div>
+          </aside>
+
+          <section class="panel order-panel">
+            <div class="order-title">
+              <div>
+                <p class="eyebrow">Atendimento</p>
+                <h2 id="active-table-label">Mesa 1</h2>
+              </div>
+              <div class="total-pill total-stack">
+                <span>Subtotal</span>
+                <strong id="active-table-subtotal">R$ 0,00</strong>
+                <small>10% gar&ccedil;om: <b id="active-table-service">R$ 0,00</b></small>
+                <small>Total final: <b id="active-table-total">R$ 0,00</b></small>
+              </div>
+            </div>
+
+            <div id="active-session-meta" class="session-meta">
+              Mesa livre. O horario de abertura sera criado no primeiro pedido.
+            </div>
+
+            <div class="waiter-layout">
+              <div>
+                <div class="toolbar">
+                  <input id="waiter-search" class="input" type="search" placeholder="Buscar produto" />
+                  <select id="waiter-category" class="input select">
+                    <option value="all">Todos</option>
+                  </select>
+                </div>
+                <div id="waiter-menu" class="waiter-menu"></div>
+              </div>
+
+              <div class="cart-box">
+                <div class="section-head compact">
+                  <div>
+                    <h3>Pedido atual</h3>
+                    <p>Itens ainda n&atilde;o enviados para preparo.</p>
+                  </div>
+                </div>
+                <div id="cart-items" class="cart-items empty-state">Nenhum item no pedido atual.</div>
+                <label class="field">
+                  <span>Observa&ccedil;&atilde;o geral</span>
+                  <textarea id="order-note" rows="3" placeholder="Ex.: cliente pediu para trazer bebidas primeiro"></textarea>
+                </label>
+                <div class="cart-footer">
+                  <div>
+                    <span>Subtotal</span>
+                    <strong id="cart-total">R$ 0,00</strong>
+                  </div>
+                  <button id="send-order" class="primary-button" type="button">Enviar pedido</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="history">
+              <div class="section-head compact">
+                <div>
+                  <h3>Pedidos da mesa</h3>
+                  <p>Hist&oacute;rico da ocupa&ccedil;&atilde;o aberta at&eacute; o fechamento.</p>
+                </div>
+                <button id="close-table" class="ghost-button" type="button">Fechar mesa</button>
+              </div>
+              <div id="table-history" class="history-list"></div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="view-kitchen">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Preparo</p>
+            <h2>Cozinha e bar</h2>
+            <p>Pedidos enviados pelo gar&ccedil;om, organizados por mesa e status.</p>
+          </div>
+          <div class="segmented" role="group" aria-label="Filtro de preparo">
+            <button class="segment active" data-station="all">Todos</button>
+            <button class="segment" data-station="cozinha">Cozinha</button>
+            <button class="segment" data-station="bar">Bar</button>
+          </div>
+        </div>
+        <div id="kitchen-board" class="kitchen-board"></div>
+      </section>
+
+      <section class="view" id="view-sessions">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Historico operacional</p>
+            <h2>Hist&oacute;rico das mesas</h2>
+            <p>Consulte as ocupa&ccedil;&otilde;es por dia, com abertura, fechamento, pedidos e 10% do gar&ccedil;om.</p>
+          </div>
+          <div class="history-filters">
+            <label class="field">
+              <span>Filtrar por dia</span>
+              <input id="session-date-filter" class="input" type="date" />
+            </label>
+            <button id="clear-session-filter" class="ghost-button" type="button">Todos os dias</button>
+          </div>
+        </div>
+        <div id="session-summary" class="summary-grid"></div>
+        <div id="session-history" class="session-history"></div>
+      </section>
+
+      <section class="view" id="view-qr">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Mesas</p>
+            <h2>QR Codes do card&aacute;pio</h2>
+            <p>Imprima os cart&otilde;es e coloque um em cada mesa.</p>
+          </div>
+          <button id="print-qr" class="primary-button" type="button">Imprimir cart&otilde;es</button>
+        </div>
+        <div id="qr-grid" class="qr-grid"></div>
+      </section>
+    </main>
+
+    <template id="toast-template">
+      <div class="toast" role="status"></div>
+    </template>
+    <div id="toast-root" class="toast-root"></div>
+
+    <div id="login-modal" class="modal-backdrop" hidden>
+      <section class="login-modal" role="dialog" aria-modal="true" aria-labelledby="login-title">
+        <div class="section-head compact">
+          <div>
+            <p class="eyebrow">Acesso autorizado</p>
+            <h2 id="login-title">Entrar na &aacute;rea interna</h2>
+            <p>Entre com usuario e senha para liberar as abas operacionais.</p>
+          </div>
+          <button id="close-login" class="icon-close" type="button" aria-label="Fechar">&times;</button>
+        </div>
+
+        <label class="field">
+          <span>Usuario</span>
+          <input id="login-user" class="input" type="text" autocomplete="username" placeholder="Ex.: garcom" />
+        </label>
+
+        <label class="field">
+          <span>Senha</span>
+          <input id="login-password" class="input" type="password" autocomplete="current-password" placeholder="Digite a senha" />
+        </label>
+
+        <div class="login-actions">
+          <button id="login-submit" class="primary-button" type="button">Entrar</button>
+          <button id="login-public" class="ghost-button" type="button">Continuar como p&uacute;blico</button>
+        </div>
+      </section>
+    </div>
+
+    <script src="../shared/demo-runtime.js"></script>
+    <script src="app.js"></script>
+    <script src="demo-adapter.js"></script>
+  </body>
+</html>

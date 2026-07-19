@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bolao da Copa</title>
+    <link rel="stylesheet" href="../shared/demo-runtime.css" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero-inner">
+        <section>
+          <p class="eyebrow">Bolao da Copa</p>
+          <h1>Brasil x Noruega</h1>
+          <p class="lead">
+            Escolha o placar, faca o Pix e aguarde a confirmacao manual. So
+            entra na lista oficial quem tiver pagamento confirmado.
+          </p>
+          <div class="facts">
+            <div class="fact"><span>Valor</span><strong id="priceTop">R$ 10,00</strong></div>
+            <div class="fact"><span>Regra</span><strong>7 por placar</strong></div>
+            <div class="fact"><span>Pix</span><strong>Semiautomatico</strong></div>
+          </div>
+        </section>
+
+        <aside class="flow-box">
+          <p class="eyebrow">Como participar</p>
+          <ol class="steps">
+            <li><strong>1</strong><span>Informe seus dados para identificarmos sua aposta.</span></li>
+            <li><strong>2</strong><span>Escolha um placar disponivel entre 0x0 e 5x5.</span></li>
+            <li><strong>3</strong><span>Faca o Pix e aguarde a confirmacao manual.</span></li>
+          </ol>
+        </aside>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="stack">
+        <form class="panel" id="betForm">
+          <div class="panel-top">
+            <div>
+              <p class="eyebrow">Novo palpite</p>
+              <h2>Reservar aposta</h2>
+            </div>
+            <span class="pill" id="loadState">Carregando</span>
+          </div>
+
+          <div class="field-grid">
+            <div>
+              <label class="label" for="name">Nome igual aparece no Pix</label>
+              <input id="name" autocomplete="name" placeholder="Nome do participante" />
+            </div>
+            <div>
+              <label class="label" for="contact">WhatsApp</label>
+              <input id="contact" autocomplete="tel" inputmode="tel" placeholder="DDD + numero" />
+            </div>
+          </div>
+
+          <label class="label" for="pixName">Chave Pix</label>
+          <input id="pixName" placeholder="CPF, telefone, email ou chave aleatoria" />
+
+          <label class="label" for="score">Placar escolhido</label>
+          <select id="score"></select>
+          <div class="score-warning hidden" id="scoreWarning"></div>
+
+          <button class="btn btn-yellow" id="reserveBtn" type="submit">
+            Reservar palpite pendente
+          </button>
+        </form>
+
+        <section class="panel pix-box">
+          <div class="pix-head">
+            <div>
+              <p class="eyebrow">Pix do bolao</p>
+              <p class="pix-price" id="pricePix">R$ 10,00</p>
+            </div>
+            <img class="qr" src="../../assets/yg-systems-monogram.png" alt="Marca da demonstracao" />
+          </div>
+          <div class="pix-key">
+            <span class="label">Chave Pix</span>
+            <div class="copy-row">
+              <code id="pixKey">demo@ygsystems.com.br</code>
+              <button class="btn" id="copyPix" type="button">Copiar</button>
+            </div>
+          </div>
+          <p class="payment-alert">
+            Seu placar so sera computado na lista oficial depois que o Pix for
+            feito e confirmado manualmente.
+          </p>
+        </section>
+
+        <section class="panel">
+          <div class="panel-top">
+            <div>
+              <p class="eyebrow">Admin</p>
+              <h2>Confirmacao manual</h2>
+            </div>
+            <span class="pill" id="pendingCount">0 pendentes</span>
+          </div>
+
+          <form class="admin-login" id="adminLogin">
+            <input id="adminCode" placeholder="Codigo admin" type="password" />
+            <button class="btn" type="submit">Entrar</button>
+          </form>
+
+          <div class="stack hidden" id="pendingList"></div>
+        </section>
+      </section>
+
+      <section class="stack">
+        <section class="panel">
+          <div class="panel-top">
+            <div>
+              <p class="eyebrow">Espacos do placar</p>
+              <h2 id="selectedTitle">0x0</h2>
+            </div>
+            <span class="pill" id="scoreCount">0/7 confirmados</span>
+          </div>
+          <div class="slots" id="slots"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-top">
+            <div>
+              <p class="eyebrow">Ordem oficial</p>
+              <h2>Apostas confirmadas</h2>
+            </div>
+            <button class="btn btn-quiet" id="refreshBtn" type="button">Atualizar</button>
+          </div>
+          <div class="list" id="confirmedList"></div>
+        </section>
+      </section>
+    </main>
+
+    <div class="notice hidden" id="notice"></div>
+    <script src="../shared/demo-runtime.js"></script>
+    <script src="./app.js" defer></script>
+    <script src="./demo-adapter.js" defer></script>
+  </body>
+</html>
