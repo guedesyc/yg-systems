@@ -295,6 +295,24 @@ p {
   padding: 12px;
 }
 
+.isolation-note {
+  align-items: center;
+  background: rgba(22, 139, 255, 0.1);
+  border: 1px solid rgba(59, 185, 255, 0.24);
+  border-radius: var(--radius);
+  color: var(--muted);
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding: 12px 14px;
+}
+
+.isolation-note strong {
+  color: var(--text);
+  white-space: nowrap;
+}
+
 .tab-list {
   display: grid;
   gap: 8px;
@@ -712,6 +730,11 @@ footer span:first-child {
   font-weight: 850;
 }
 
+footer a {
+  color: var(--accent-2);
+  font-weight: 850;
+}
+
 @media (max-width: 980px) {
   .hero,
   .section.intro,
@@ -761,6 +784,11 @@ footer span:first-child {
 
   .demo-header {
     align-items: stretch;
+    flex-direction: column;
+  }
+
+  .isolation-note {
+    align-items: flex-start;
     flex-direction: column;
   }
 

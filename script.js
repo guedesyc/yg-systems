@@ -72,7 +72,6 @@ function openDemoModal(productKey) {
   selectedDemo = productKey || "restaurante";
   const product = demoProducts[selectedDemo];
   if (demoModalProduct) demoModalProduct.textContent = product.name;
-  if (demoEditButton) demoEditButton.dataset.demo = selectedDemo;
   if (demoModal) demoModal.hidden = false;
 }
 
