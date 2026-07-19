@@ -14,6 +14,7 @@ const detailCopy = document.querySelector("#ecosystem-detail-copy");
 const detailBenefits = document.querySelector("#ecosystem-detail-benefits");
 const detailPreview = document.querySelector("#ecosystem-detail-preview");
 const detailDemo = document.querySelector("#ecosystem-detail-demo");
+const detailSection = document.querySelector("#demonstracao");
 
 const demoPaths = {
   restaurante: "demos/restaurante/index.html",
@@ -84,6 +85,11 @@ function updateEcosystemDetail(tabName) {
   if (detailPreview) {
     detailPreview.innerHTML = product.preview.map(([label, title, copy], index) =>
       `<div class="demo-panel ${index === 0 ? "menu" : index === 1 ? "order" : "admin"}"><span>${label}</span><strong>${title}</strong><small>${copy}</small></div>`).join("");
+  }
+  if (detailSection) {
+    detailSection.classList.remove("is-switching");
+    void detailSection.offsetWidth;
+    detailSection.classList.add("is-switching");
   }
 }
 
@@ -211,3 +217,22 @@ form?.addEventListener("submit", (event) => {
   }
   form.reset();
 });
+
+const revealTargets = document.querySelectorAll("main > section, main > aside, footer");
+if ("IntersectionObserver" in window) {
+  document.body.classList.add("motion-ready");
+  const revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        revealObserver.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.08, rootMargin: "0px 0px -40px" },
+  );
+  revealTargets.forEach((target, index) => {
+    target.style.setProperty("--reveal-delay", `${Math.min(index * 35, 180)}ms`);
+    revealObserver.observe(target);
+  });
+}
