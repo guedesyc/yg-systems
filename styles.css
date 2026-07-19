@@ -143,17 +143,17 @@ p {
 }
 
 h1 {
-  font-size: clamp(2.55rem, 7vw, 5.9rem);
+  font-size: clamp(2.15rem, 4.8vw, 4.35rem);
   font-weight: 920;
-  line-height: 0.96;
+  line-height: 1;
   margin: 12px 0 18px;
-  max-width: 900px;
+  max-width: 760px;
 }
 
 h2 {
-  font-size: clamp(1.7rem, 4vw, 3.4rem);
+  font-size: clamp(1.45rem, 3vw, 2.55rem);
   font-weight: 880;
-  line-height: 1;
+  line-height: 1.06;
   margin: 8px 0 0;
 }
 
@@ -163,12 +163,12 @@ h3 {
 }
 
 p {
-  font-size: 1.04rem;
-  line-height: 1.65;
+  font-size: 1rem;
+  line-height: 1.58;
 }
 
 .hero-copy > p {
-  max-width: 690px;
+  max-width: 610px;
 }
 
 .hero-actions {
@@ -201,16 +201,16 @@ p {
 
 .hero-visual {
   isolation: isolate;
-  min-height: 540px;
+  min-height: 430px;
   position: relative;
 }
 
 .hero-visual > img {
   border-radius: var(--radius);
   height: 100%;
-  max-height: 680px;
+  max-height: 520px;
   object-fit: cover;
-  opacity: 0.82;
+  opacity: 0.7;
   width: 100%;
 }
 
@@ -246,7 +246,7 @@ p {
 .section,
 .restaurant-section,
 .contact-section {
-  margin-top: 54px;
+  margin-top: 44px;
 }
 
 .section.intro,
@@ -258,7 +258,6 @@ p {
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
 }
 
-.product-grid,
 .steps {
   display: grid;
   gap: 16px;
@@ -266,7 +265,6 @@ p {
   margin-top: 24px;
 }
 
-.product-card,
 .demo-panel,
 .steps article,
 .contact-form {
@@ -277,14 +275,131 @@ p {
   padding: 18px;
 }
 
-.product-card.featured {
+.ecosystem-tabs {
+  background: rgba(10, 16, 32, 0.62);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-top: 24px;
+  padding: 12px;
+}
+
+.tab-list {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin-bottom: 12px;
+}
+
+.tab-button {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+  cursor: pointer;
+  font-weight: 820;
+  min-height: 44px;
+  padding: 0 12px;
+}
+
+.tab-button.active {
+  background: linear-gradient(135deg, rgba(22, 139, 255, 0.24), rgba(59, 185, 255, 0.12));
+  border-color: rgba(59, 185, 255, 0.52);
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px rgba(59, 185, 255, 0.1);
+}
+
+.tab-panel {
+  align-items: stretch;
   background:
-    linear-gradient(135deg, rgba(22, 139, 255, 0.18), rgba(10, 16, 32, 0.92)),
+    linear-gradient(135deg, rgba(22, 139, 255, 0.1), rgba(10, 16, 32, 0.92)),
+    var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  display: none;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  padding: clamp(16px, 3vw, 28px);
+}
+
+.tab-panel.active {
+  display: grid;
+}
+
+.tab-panel h3 {
+  font-size: clamp(1.35rem, 2.2vw, 2.1rem);
+  margin: 6px 0 8px;
+}
+
+.tab-panel p {
+  max-width: 700px;
+}
+
+.tab-panel ul {
+  color: var(--muted);
+  display: grid;
+  gap: 8px;
+  line-height: 1.45;
+  margin: 16px 0 0;
+  padding-left: 18px;
+}
+
+.tab-panel span,
+.tab-preview span,
+.product-card span {
+  color: var(--accent-2);
+  font-size: 0.75rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero-actions.compact {
+  margin-top: 18px;
+}
+
+.tab-preview {
+  align-content: end;
+  background:
+    radial-gradient(circle at top right, rgba(59, 185, 255, 0.24), transparent 13rem),
+    rgba(5, 9, 20, 0.72);
+  border: 1px solid rgba(59, 185, 255, 0.24);
+  border-radius: var(--radius);
+  display: grid;
+  gap: 8px;
+  min-height: 260px;
+  padding: 18px;
+}
+
+.tab-preview strong {
+  font-size: 1.45rem;
+}
+
+.tab-preview b {
+  color: var(--success);
+  font-size: 1rem;
+}
+
+.restaurant-preview {
+  background:
+    linear-gradient(135deg, rgba(22, 139, 255, 0.2), rgba(10, 16, 32, 0.84)),
     var(--surface);
 }
 
+.restaurant-preview span {
+  background: rgba(22, 139, 255, 0.13);
+  border: 1px solid rgba(59, 185, 255, 0.24);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 0.84rem;
+  padding: 8px 11px;
+  width: fit-content;
+}
+
+.product-card,
+.product-card.featured,
 .product-card.muted {
-  opacity: 0.72;
+  display: none;
 }
 
 .product-card a {
@@ -410,7 +525,8 @@ footer span:first-child {
   .hero,
   .section.intro,
   .restaurant-section,
-  .contact-section {
+  .contact-section,
+  .tab-panel {
     grid-template-columns: 1fr;
   }
 
@@ -422,6 +538,10 @@ footer span:first-child {
     left: 16px;
     right: 16px;
   }
+
+  .tab-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 720px) {
@@ -432,8 +552,8 @@ footer span:first-child {
   }
 
   .topbar nav,
-  .product-grid,
   .steps,
+  .tab-list,
   .contact-form {
     grid-template-columns: 1fr;
   }
@@ -447,10 +567,9 @@ footer span:first-child {
   }
 
   h1 {
-    font-size: clamp(2.2rem, 12vw, 3.5rem);
+    font-size: clamp(2rem, 10vw, 3rem);
   }
 
-  .product-grid,
   .steps {
     display: grid;
   }

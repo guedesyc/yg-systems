@@ -50,8 +50,8 @@
         </span>
       </a>
       <nav aria-label="Navegacao principal">
-        <a href="#ecossistema">Ecossistema</a>
-        <a href="#restaurante">YG Restaurante</a>
+        <a href="#ecossistema">Ecossistemas</a>
+        <a href="#restaurante">Demonstração</a>
         <a href="#processo">Processo</a>
         <a href="#contato">Contato</a>
       </nav>
@@ -61,14 +61,14 @@
       <section class="hero" id="inicio">
         <div class="hero-copy">
           <p class="eyebrow">YG Systems</p>
-          <h1>Sistemas digitais claros para negocios que precisam sair do improviso.</h1>
+          <h1>Um ecossistema digital para organizar negocios reais.</h1>
           <p>
-            Construimos produtos web para organizar atendimento, pedidos, cadastros e rotinas
-            operacionais com simplicidade, identidade propria e caminho para evolucao.
+            Produtos web para atendimento, pedidos, estoque, controle financeiro, feedbacks e
+            eventos, com simplicidade para quem precisa sair do improviso sem complicar a rotina.
           </p>
           <div class="hero-actions">
-            <a class="button primary" href="#restaurante">Conhecer o primeiro produto</a>
-            <a class="button secondary" href="#contato">Conversar sobre meu sistema</a>
+            <a class="button primary" href="#ecossistema">Ver ecossistemas</a>
+            <a class="button secondary" href="#restaurante">Abrir exemplo restaurante</a>
           </div>
         </div>
 
@@ -85,34 +85,126 @@
       <section class="section intro" id="ecossistema">
         <div>
           <p class="eyebrow">Ecossistema</p>
-          <h2>Uma marca, varios produtos para operacoes reais.</h2>
+          <h2>Escolha uma area e veja o que a YG Systems pode organizar.</h2>
         </div>
         <p>
-          A YG Systems nasce como uma base para criar solucoes sob medida. Cada produto deve
-          resolver um problema concreto, com interface simples para quem ainda depende de papel,
-          mensagens soltas, planilhas ou controles manuais.
+          A ideia e construir produtos por modulo. A pessoa escolhe o tipo de solucao que precisa
+          e entende, sem termo tecnico, quais problemas aquele ecossistema resolve.
         </p>
       </section>
 
-      <section class="product-grid" aria-label="Produtos do ecossistema">
-        <article class="product-card featured">
-          <span>01</span>
-          <h3>YG Restaurante</h3>
-          <p>
-            Sistema web para cardapio, montagem de pedidos, acompanhamento e painel administrativo
-            demonstrativo para restaurantes, pizzarias e lanchonetes.
-          </p>
-          <a href="#restaurante">Ver produto</a>
+      <section class="ecosystem-tabs" aria-label="Ecossistemas YG Systems">
+        <div class="tab-list" role="tablist" aria-label="Escolha o ecossistema">
+          <button class="tab-button active" type="button" role="tab" aria-selected="true" aria-controls="tab-restaurante" data-tab="restaurante">Restaurante</button>
+          <button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tab-bar" data-tab="bar">Bar</button>
+          <button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tab-estoque" data-tab="estoque">Estoque e Controle</button>
+          <button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tab-financeiro" data-tab="financeiro">Financeiro</button>
+          <button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tab-feedbacks" data-tab="feedbacks">Feedbacks</button>
+          <button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tab-eventos" data-tab="eventos">Eventos</button>
+        </div>
+
+        <article class="tab-panel active" id="tab-restaurante" role="tabpanel" data-panel="restaurante">
+          <div>
+            <span>01</span>
+            <h3>YG Restaurante</h3>
+            <p>
+              Cardapio digital, montagem de pedidos, escolha de sabores, entrega ou retirada,
+              pagamentos e painel basico para acompanhar pedidos.
+            </p>
+            <ul>
+              <li>Ideal para pizzarias, restaurantes e lanchonetes.</li>
+              <li>Ajuda quem recebe pedido principalmente pelo WhatsApp.</li>
+              <li>Primeira demonstracao: exemplo da pizzaria Pedir Delivery.</li>
+            </ul>
+            <div class="hero-actions compact">
+              <a class="button primary" href="#restaurante">Ver detalhes abaixo</a>
+              <a
+                class="button secondary"
+                href="https://guedesyc.github.io/https-pedir-delivery-app-hotflash-menu/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Abrir demonstração da pizzaria
+              </a>
+            </div>
+          </div>
+          <div class="tab-preview restaurant-preview">
+            <strong>Pedido #YG1024</strong>
+            <small>Pizza Grande - 2 sabores</small>
+            <span>Calabresa</span>
+            <span>Marguerita</span>
+            <b>Entrega em preparo</b>
+          </div>
         </article>
-        <article class="product-card muted">
-          <span>02</span>
-          <h3>YG Agenda</h3>
-          <p>Espaco reservado para uma futura solucao de agendamentos e atendimentos.</p>
+
+        <article class="tab-panel" id="tab-bar" role="tabpanel" data-panel="bar" hidden>
+          <div>
+            <span>02</span>
+            <h3>YG Bar</h3>
+            <p>Comandas simples, controle de mesas, itens consumidos e fechamento rapido.</p>
+            <ul>
+              <li>Mesas e comandas abertas.</li>
+              <li>Produtos mais vendidos.</li>
+              <li>Resumo do atendimento por turno.</li>
+            </ul>
+          </div>
+          <div class="tab-preview"><strong>Mesa 08</strong><small>Comanda aberta</small><b>R$ 86,40</b></div>
         </article>
-        <article class="product-card muted">
-          <span>03</span>
-          <h3>YG Operacao</h3>
-          <p>Espaco reservado para uma futura solucao de controle operacional simples.</p>
+
+        <article class="tab-panel" id="tab-estoque" role="tabpanel" data-panel="estoque" hidden>
+          <div>
+            <span>03</span>
+            <h3>YG Estoque e Controle</h3>
+            <p>Entrada, saida, alerta de baixo estoque e visao simples do que precisa reposicao.</p>
+            <ul>
+              <li>Produtos cadastrados por categoria.</li>
+              <li>Alertas de reposicao.</li>
+              <li>Historico basico de movimentacoes.</li>
+            </ul>
+          </div>
+          <div class="tab-preview"><strong>Baixo estoque</strong><small>6 itens precisam reposicao</small><b>Atualizar lista</b></div>
+        </article>
+
+        <article class="tab-panel" id="tab-financeiro" role="tabpanel" data-panel="financeiro" hidden>
+          <div>
+            <span>04</span>
+            <h3>YG Financeiro</h3>
+            <p>Organizacao inicial de entradas, saidas, contas a pagar e resultado do periodo.</p>
+            <ul>
+              <li>Receitas e despesas.</li>
+              <li>Contas por vencimento.</li>
+              <li>Resumo mensal para decisao rapida.</li>
+            </ul>
+          </div>
+          <div class="tab-preview"><strong>Resultado do mes</strong><small>Receitas menos despesas</small><b>+ R$ 4.280,00</b></div>
+        </article>
+
+        <article class="tab-panel" id="tab-feedbacks" role="tabpanel" data-panel="feedbacks" hidden>
+          <div>
+            <span>05</span>
+            <h3>YG Feedbacks</h3>
+            <p>Coleta simples de opinioes, notas e observacoes para melhorar atendimento.</p>
+            <ul>
+              <li>Formulario de satisfacao.</li>
+              <li>Notas por atendimento.</li>
+              <li>Pontos recorrentes para melhoria.</li>
+            </ul>
+          </div>
+          <div class="tab-preview"><strong>Nota media</strong><small>Ultimos 30 feedbacks</small><b>4,7 / 5</b></div>
+        </article>
+
+        <article class="tab-panel" id="tab-eventos" role="tabpanel" data-panel="eventos" hidden>
+          <div>
+            <span>06</span>
+            <h3>YG Eventos</h3>
+            <p>Cadastro de eventos, lista de participantes, confirmacoes e acompanhamento basico.</p>
+            <ul>
+              <li>Inscricoes e presenca.</li>
+              <li>Controle de lotacao.</li>
+              <li>Comunicacao com participantes.</li>
+            </ul>
+          </div>
+          <div class="tab-preview"><strong>Workshop sabado</strong><small>42 confirmados</small><b>8 vagas livres</b></div>
         </article>
       </section>
 
