@@ -51,8 +51,8 @@
       </a>
       <nav aria-label="Navegacao principal">
         <a href="#ecossistema">Ecossistemas</a>
-        <a href="#restaurante">Demonstração</a>
-        <a href="#processo">Processo</a>
+        <a href="#demonstracao">Demonstração</a>
+        <a href="#processo">Como trabalhamos</a>
         <a href="#contato">Contato</a>
       </nav>
     </header>
@@ -68,7 +68,7 @@
           </p>
           <div class="hero-actions">
             <a class="button primary" href="#ecossistema">Ver ecossistemas</a>
-            <a class="button secondary" href="#restaurante">Abrir exemplo restaurante</a>
+            <a class="button secondary" href="#demonstracao">Conhecer os exemplos</a>
           </div>
         </div>
 
@@ -125,7 +125,7 @@
               <li>Primeira demonstracao: exemplo da pizzaria Pedir Delivery.</li>
             </ul>
             <div class="hero-actions compact">
-              <a class="button secondary" href="#restaurante">Ver detalhes abaixo</a>
+              <a class="button secondary" href="#demonstracao">Ver detalhes abaixo</a>
               <button class="button primary demo-trigger" type="button" data-demo="restaurante">
                 Ver demo personalizada
               </button>
@@ -236,68 +236,54 @@
         </article>
       </section>
 
-      <section class="restaurant-section" id="restaurante">
+      <section class="restaurant-section" id="demonstracao">
         <div class="restaurant-copy">
-          <p class="eyebrow">YG Restaurante</p>
-          <h2>O primeiro exemplo comercial do ecossistema.</h2>
-          <p>
-            O YG Restaurante sera apresentado como uma solucao para estabelecimentos que recebem
-            pedidos pelo WhatsApp e precisam organizar cardapio, sabores, carrinho, pagamento,
-            entrega, retirada e acompanhamento.
+          <p class="eyebrow" id="ecosystem-detail-label">YG Restaurante</p>
+          <h2 id="ecosystem-detail-title">Mais clareza para vender, atender e acompanhar cada pedido.</h2>
+          <p id="ecosystem-detail-copy">
+            Seu cliente visualiza o cardápio, monta o pedido e informa como quer receber. A equipe
+            ganha uma visão organizada para evitar mensagens perdidas e dúvidas no atendimento.
           </p>
-          <p>
-            O projeto de referencia funcional sera o sistema Pedir Delivery informado por voce,
-            usado apenas como inspiracao interna do fluxo. Para o visitante, a experiencia abre
-            uma demonstracao personalizada com nome, logo e cor do proprio negocio.
-          </p>
+          <ul id="ecosystem-detail-benefits">
+            <li>Mais agilidade para quem atende pelo WhatsApp.</li>
+            <li>Menos erros em sabores, endereço e pagamento.</li>
+            <li>Uma apresentação profissional para o seu negócio.</li>
+          </ul>
           <div class="hero-actions">
-            <button class="button primary demo-trigger" type="button" data-demo="restaurante">
+            <button class="button primary demo-trigger" id="ecosystem-detail-demo" type="button" data-demo="restaurante">
               Visualizar minha demo
             </button>
             <a class="button secondary" href="#contato">Quero adaptar para meu negocio</a>
           </div>
         </div>
 
-        <div class="restaurant-demo" aria-label="Resumo visual do YG Restaurante">
-          <div class="demo-panel menu">
-            <span>Cardapio</span>
-            <strong>Pizza Grande</strong>
-            <small>2 sabores selecionados</small>
-            <div class="tags"><span>Calabresa</span><span>Marguerita</span></div>
-          </div>
-          <div class="demo-panel order">
-            <span>Pedido</span>
-            <strong>Entrega ou retirada</strong>
-            <small>Pagamento, endereco e observacoes no mesmo fluxo.</small>
-          </div>
-          <div class="demo-panel admin">
-            <span>Painel</span>
-            <strong>Produtos e pedidos</strong>
-            <small>Gestao basica para demonstracao comercial.</small>
-          </div>
+        <div class="restaurant-demo" id="ecosystem-detail-preview" aria-label="Resumo visual do ecossistema selecionado">
+          <div class="demo-panel menu"><span>Cardápio</span><strong>Pedido organizado</strong><small>Sabores, entrega e pagamento em um só fluxo.</small></div>
+          <div class="demo-panel order"><span>Atendimento</span><strong>Menos dúvidas</strong><small>Informações completas antes de confirmar.</small></div>
+          <div class="demo-panel admin"><span>Painel</span><strong>Visão do dia</strong><small>Pedidos prontos para acompanhar.</small></div>
         </div>
       </section>
 
       <section class="section" id="processo">
         <div>
-          <p class="eyebrow">Processo</p>
-          <h2>Como cada produto da YG Systems deve nascer.</h2>
+          <p class="eyebrow">Como trabalhamos</p>
+          <h2>Um sistema que acompanha a rotina do seu negócio.</h2>
         </div>
         <div class="steps">
           <article>
             <span>1</span>
-            <strong>Entender o problema</strong>
-            <p>Mapear a rotina real do negocio antes de propor telas.</p>
+            <strong>Olhar para sua rotina</strong>
+            <p>Entendemos onde o atendimento trava, onde o controle se perde e o que mais toma o seu tempo.</p>
           </article>
           <article>
             <span>2</span>
-            <strong>Criar a demonstracao</strong>
-            <p>Mostrar o produto funcionando com dados ficticios e identidade da marca.</p>
+            <strong>Mostrar antes de decidir</strong>
+            <p>Você vê uma versão com a sua marca para entender, na prática, como o dia a dia pode ficar mais simples.</p>
           </article>
           <article>
             <span>3</span>
-            <strong>Evoluir com seguranca</strong>
-            <p>Adicionar banco de dados, integracoes e publicacao quando fizer sentido.</p>
+            <strong>Transformar em resultado</strong>
+            <p>O objetivo é reduzir retrabalho, atender melhor e dar mais segurança para você cuidar do que faz o negócio crescer.</p>
           </article>
         </div>
       </section>
@@ -307,8 +293,8 @@
           <p class="eyebrow">Contato</p>
           <h2>Vamos transformar uma rotina manual em um sistema simples.</h2>
           <p>
-            Esta primeira versao ainda nao envia dados para backend. Ela deixa preparado o ponto de
-            entrada para integrar WhatsApp, e-mail, Supabase ou uma API propria.
+            Conte rapidamente o que você quer organizar. Ao enviar, uma conversa com a YG Systems
+            será aberta no WhatsApp com suas informações já preenchidas.
           </p>
         </div>
         <form class="contact-form" id="leadForm">
@@ -329,7 +315,7 @@
             <textarea name="message" required></textarea>
           </label>
           <input type="hidden" name="origin" value="site YG Systems" />
-          <button class="button primary" type="submit">Preparar contato</button>
+          <button class="button primary" type="submit">Falar no WhatsApp</button>
           <p class="form-note" id="formNote" role="status"></p>
         </form>
       </section>
@@ -345,10 +331,7 @@
         <button class="modal-close" type="button" id="demoModalClose" aria-label="Fechar">x</button>
         <p class="eyebrow" id="demoModalProduct">Demo personalizada</p>
         <h2 id="demoModalTitle">Veja como ficaria com a sua marca.</h2>
-        <p>
-          Informe os dados do negocio. A demo abre em uma nova pagina isolada; a vitrine principal
-          da YG Systems permanece igual.
-        </p>
+        <p>Informe os dados do negócio para abrir uma demonstração separada, só com a sua marca.</p>
         <label>
           Nome da empresa
           <input name="businessName" required placeholder="Ex: Bar do Joao" />
@@ -362,6 +345,7 @@
           <input name="brandColor" type="color" value="#168bff" />
         </label>
         <button class="button primary" type="submit">Abrir minha demo</button>
+        <p class="form-note" id="demoFormNote" role="status"></p>
       </form>
     </div>
 

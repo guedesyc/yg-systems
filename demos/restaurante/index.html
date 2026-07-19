@@ -1,172 +1,55 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>YG Restaurante | Demo personalizada</title>
-    <link rel="stylesheet" href="../shared/demo-runtime.css" />
-    <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Demo personalizada do YG Restaurante." />
+    <link rel="icon" href="./yg-systems-monogram.png" />
+    <title>YG Restaurante | YG Systems</title>
+    <script>
+      (() => {
+        const params = new URLSearchParams(window.location.search);
+        const sessionId = params.get("demoSession") || "preview";
+        const sourceKey = `yg-systems:demo:${sessionId}`;
+        const configKey = "yg-restaurante:demo-config:v1";
+        const scopedKey = `yg-systems:restaurant-config:${sessionId}`;
+        const fallback = {
+          businessName: "Restaurante Demonstracao",
+          businessLogo: "",
+          primaryColor: "#168BFF",
+          productName: "YG Restaurante",
+          segment: "restaurante",
+          demoSessionId: sessionId,
+          createdAt: new Date().toISOString(),
+        };
+
+        try {
+          const source = JSON.parse(window.localStorage.getItem(sourceKey) || "{}");
+          const config = {
+            ...fallback,
+            businessName: source.businessName || fallback.businessName,
+            businessLogo: source.logo || "",
+            primaryColor: source.brandColor || fallback.primaryColor,
+          };
+          window.localStorage.setItem(scopedKey, JSON.stringify(config));
+
+          const getItem = Storage.prototype.getItem;
+          const setItem = Storage.prototype.setItem;
+          Storage.prototype.getItem = function (key) {
+            return key === configKey ? getItem.call(this, scopedKey) : getItem.call(this, key);
+          };
+          Storage.prototype.setItem = function (key, value) {
+            return key === configKey ? setItem.call(this, scopedKey, value) : setItem.call(this, key, value);
+          };
+        } catch {
+          // The original app keeps its own safe defaults when browser storage is unavailable.
+        }
+      })();
+    </script>
+    <script type="module" crossorigin src="./assets/index-DikwXR9D.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-C8QQr6Iu.css" />
   </head>
   <body>
-    <main class="restaurant-shell">
-      <header class="restaurant-topbar">
-        <div class="restaurant-brand">
-          <div class="brand-mark">YG</div>
-          <div>
-            <p class="eyebrow">YG Restaurante</p>
-            <h1>YG Restaurante</h1>
-            <span>Cardapio, pedidos e atendimento em uma demo funcional.</span>
-          </div>
-        </div>
-        <nav class="restaurant-tabs" aria-label="Sistema demonstrativo">
-          <button class="active" type="button" data-view="cardapio">Cardapio</button>
-          <button type="button" data-view="status">Status</button>
-          <button type="button" data-view="admin">Admin</button>
-        </nav>
-      </header>
-
-      <section class="view active customer-layout" id="cardapio">
-        <div class="menu-column">
-          <section class="menu-hero">
-            <div>
-              <div class="hero-status"><span>Aberto agora</span><span>Todos os dias, 18h as 23h30</span></div>
-              <p class="eyebrow">Bem-vindo a</p>
-              <h2>Monte seu pedido em poucos passos.</h2>
-              <p>Monte um pedido, escolha entrega ou retirada e veja como a mensagem seria preparada.</p>
-            </div>
-            <div class="pix-box">
-              <span>Pedido atual</span>
-              <strong id="heroTotal">R$ 0,00</strong>
-              <small id="heroItemCount">0 item(ns) no carrinho</small>
-            </div>
-          </section>
-
-          <section class="builder">
-            <div class="section-heading">
-              <div>
-                <p class="eyebrow">Passo 1</p>
-                <h2>Escolha o produto</h2>
-              </div>
-              <span id="productCount">0 opcoes</span>
-            </div>
-            <div class="product-grid" id="productGrid"></div>
-
-            <div class="flavor-panel">
-              <div>
-                <p class="eyebrow">Passo 2</p>
-                <h3>Escolha os sabores</h3>
-                <p id="flavorSelectionCount">0 selecionado(s)</p>
-              </div>
-              <h3 id="selectedProductLabel">Pizza Grande</h3>
-              <div class="type-tabs" id="typeTabs" aria-label="Tipo de sabor"></div>
-              <div class="flavor-list scroll-area" id="flavorGrid"></div>
-              <label class="field full">
-                Observacao
-                <textarea id="notes" placeholder="Ex: sem cebola, massa bem assada"></textarea>
-              </label>
-              <button class="primary-action" id="addToCart" type="button">Adicionar ao carrinho</button>
-            </div>
-          </section>
-        </div>
-
-        <aside class="checkout-panel">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Passo 3</p>
-              <h2>Resumo</h2>
-            </div>
-            <strong id="cartTotal">R$ 0,00</strong>
-          </div>
-          <div class="cart-items" id="cartList"></div>
-          <div class="customer-form">
-            <label class="field">
-              Nome
-              <input id="customerName" autocomplete="name" />
-            </label>
-            <label class="field">
-              WhatsApp
-              <input id="customerPhone" autocomplete="tel" inputmode="tel" />
-            </label>
-            <div class="choice-group full">
-              <span>Como deseja receber?</span>
-              <div>
-                <button class="active" type="button" data-fulfillment="Entrega">Entrega</button>
-                <button type="button" data-fulfillment="Retirada">Retirada</button>
-              </div>
-            </div>
-            <label class="field full" id="addressField">
-              Endereco de entrega
-              <textarea id="customerAddress"></textarea>
-            </label>
-            <div class="choice-group full">
-              <span>Forma de pagamento</span>
-              <div>
-                <button class="active" type="button" data-payment="Pix">Pix</button>
-                <button type="button" data-payment="Cartao">Cartao</button>
-                <button type="button" data-payment="Dinheiro">Dinheiro</button>
-              </div>
-            </div>
-          </div>
-          <div class="payment-card"><span>Pagamento via Pix</span><strong>demo@ygsystems.com.br</strong><small id="paymentTotal">Total: R$ 0,00</small></div>
-          <button class="whatsapp-action" id="finishOrder" type="button">Simular finalizacao do pedido</button>
-        </aside>
-      </section>
-
-      <section class="view" id="status">
-        <section class="status-page embedded">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Acompanhamento</p>
-              <h2>Status do pedido</h2>
-            </div>
-            <span id="lastOrderLabel">Nenhum pedido novo</span>
-          </div>
-          <div class="order-list" id="statusList"></div>
-        </section>
-      </section>
-
-      <section class="view" id="admin">
-        <section class="admin-page">
-        <section class="admin-band">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Demo isolada</p>
-              <h2>Painel administrativo</h2>
-            </div>
-            <button class="secondary-action" id="resetDemo" type="button">Restaurar dados ficticios</button>
-          </div>
-          <div class="settings-grid admin-grid">
-            <article>
-              <span>Pedidos</span>
-              <strong id="ordersMetric">0</strong>
-            </article>
-            <article>
-              <span>Faturamento</span>
-              <strong id="revenueMetric">R$ 0,00</strong>
-            </article>
-            <article>
-              <span>Ticket medio</span>
-              <strong id="ticketMetric">R$ 0,00</strong>
-            </article>
-          </div>
-        </section>
-        <section class="admin-panel wide">
-          <div class="section-heading"><h2>Pedidos e comandas</h2><span id="adminOrderCount">0 pedidos</span></div>
-          <div class="admin-orders" id="adminOrders"></div>
-        </section>
-        </section>
-      </section>
-    </main>
-
-    <dialog class="message-modal" id="messageModal">
-      <p class="eyebrow">Nenhuma mensagem real foi enviada</p>
-      <h3>Previa da mensagem</h3>
-      <pre id="messagePreview"></pre>
-      <button class="primary-action" id="closeModal" type="button">Entendi</button>
-    </dialog>
-
-    <script src="../shared/demo-runtime.js"></script>
-    <script src="demo-adapter.js"></script>
-    <script src="app.js"></script>
+    <div id="root"></div>
   </body>
 </html>
