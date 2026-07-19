@@ -3,53 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Demo personalizada do YG Restaurante." />
+    <meta
+      name="description"
+      content="Cardapio digital personalizado com pedidos, status e painel administrativo."
+    />
     <link rel="icon" href="./yg-systems-monogram.png" />
-    <title>YG Restaurante | YG Systems</title>
+    <link rel="stylesheet" href="../shared/demo-runtime.css" />
+    <link rel="stylesheet" href="./assets/index-CLEQBzRg.css" />
+    <title>Restaurante | Demo personalizada</title>
+    <script src="../shared/demo-runtime.js"></script>
     <script>
       (() => {
-        const params = new URLSearchParams(window.location.search);
-        const sessionId = params.get("demoSession") || "preview";
-        const sourceKey = `yg-systems:demo:${sessionId}`;
-        const configKey = "yg-restaurante:demo-config:v1";
-        const scopedKey = `yg-systems:restaurant-config:${sessionId}`;
-        const fallback = {
-          businessName: "Restaurante Demonstracao",
-          businessLogo: "",
-          primaryColor: "#168BFF",
-          productName: "YG Restaurante",
-          segment: "restaurante",
-          demoSessionId: sessionId,
-          createdAt: new Date().toISOString(),
+        const session = window.YG_DEMO_SESSION_ID || "preview";
+        const originalKey = "aconchego-pizzaria-v2";
+        const scopedKey = `${window.YG_DEMO_STORAGE_PREFIX}:restaurante`;
+        const getItem = Storage.prototype.getItem;
+        const setItem = Storage.prototype.setItem;
+        const removeItem = Storage.prototype.removeItem;
+
+        Storage.prototype.getItem = function (key) {
+          return getItem.call(this, key === originalKey ? scopedKey : key);
+        };
+        Storage.prototype.setItem = function (key, value) {
+          return setItem.call(this, key === originalKey ? scopedKey : key, value);
+        };
+        Storage.prototype.removeItem = function (key) {
+          return removeItem.call(this, key === originalKey ? scopedKey : key);
         };
 
-        try {
-          const source = JSON.parse(window.localStorage.getItem(sourceKey) || "{}");
-          const config = {
-            ...fallback,
-            businessName: source.businessName || fallback.businessName,
-            businessLogo: source.logo || "",
-            primaryColor: source.brandColor || fallback.primaryColor,
-          };
-          window.localStorage.setItem(scopedKey, JSON.stringify(config));
-
-          const getItem = Storage.prototype.getItem;
-          const setItem = Storage.prototype.setItem;
-          Storage.prototype.getItem = function (key) {
-            return key === configKey ? getItem.call(this, scopedKey) : getItem.call(this, key);
-          };
-          Storage.prototype.setItem = function (key, value) {
-            return key === configKey ? setItem.call(this, scopedKey, value) : setItem.call(this, key, value);
-          };
-        } catch {
-          // The original app keeps its own safe defaults when browser storage is unavailable.
-        }
+        document.documentElement.dataset.demoSession = session;
       })();
     </script>
-    <script defer src="./assets/index-C_YasUBS.js"></script>
-    <link rel="stylesheet" href="./assets/index-C5w2hFTu.css" />
   </head>
   <body>
     <div id="root"></div>
+    <script type="module" src="./assets/index-DB8J-CyQ.js"></script>
+    <script defer src="./demo-adapter.js"></script>
   </body>
 </html>
