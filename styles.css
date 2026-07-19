@@ -725,14 +725,15 @@ footer {
   padding: 22px clamp(16px, 4vw, 42px);
 }
 
-footer span:first-child {
+.footer-brand {
   color: var(--text);
   font-weight: 850;
+  text-decoration: none;
 }
 
-footer a {
+.footer-brand:hover,
+.footer-brand:focus-visible {
   color: var(--accent-2);
-  font-weight: 850;
 }
 
 @media (max-width: 980px) {
