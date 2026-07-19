@@ -39,3 +39,16 @@ yg-systems/
 - Produto: YG Restaurante
 - Referencia funcional: `https://github.com/guedesyc/https-pedir-delivery-app-hotflash-menu`
 - Papel da referencia: exemplo de fluxo e demonstracao, nao base de codigo do ecossistema.
+
+## Referencias por ecossistema
+
+Estas referencias orientam a criacao das demos, mas nao devem ser abertas para o visitante final.
+Quando alguem clicar em uma demonstracao, o site deve pedir nome, logo e cor da empresa e exibir
+uma demo personalizada dentro da propria experiencia.
+
+- Restaurante: `guedesyc/https-pedir-delivery-app-hotflash-menu`
+- Eventos: `guedesyc/bolao-lemos`
+- Bar: `guedesyc/git`
+- Estoque e Controle: `guedesyc/brownie-keise`
+- Financeiro: futuro
+- Feedbacks: pendente

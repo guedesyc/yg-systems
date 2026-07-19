@@ -117,15 +117,10 @@
               <li>Primeira demonstracao: exemplo da pizzaria Pedir Delivery.</li>
             </ul>
             <div class="hero-actions compact">
-              <a class="button primary" href="#restaurante">Ver detalhes abaixo</a>
-              <a
-                class="button secondary"
-                href="https://guedesyc.github.io/https-pedir-delivery-app-hotflash-menu/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Abrir demonstração da pizzaria
-              </a>
+              <a class="button secondary" href="#restaurante">Ver detalhes abaixo</a>
+              <button class="button primary demo-trigger" type="button" data-demo="restaurante">
+                Ver demo personalizada
+              </button>
             </div>
           </div>
           <div class="tab-preview restaurant-preview">
@@ -147,6 +142,11 @@
               <li>Produtos mais vendidos.</li>
               <li>Resumo do atendimento por turno.</li>
             </ul>
+            <div class="hero-actions compact">
+              <button class="button primary demo-trigger" type="button" data-demo="bar">
+                Ver demo personalizada
+              </button>
+            </div>
           </div>
           <div class="tab-preview"><strong>Mesa 08</strong><small>Comanda aberta</small><b>R$ 86,40</b></div>
         </article>
@@ -161,6 +161,11 @@
               <li>Alertas de reposicao.</li>
               <li>Historico basico de movimentacoes.</li>
             </ul>
+            <div class="hero-actions compact">
+              <button class="button primary demo-trigger" type="button" data-demo="estoque">
+                Ver demo personalizada
+              </button>
+            </div>
           </div>
           <div class="tab-preview"><strong>Baixo estoque</strong><small>6 itens precisam reposicao</small><b>Atualizar lista</b></div>
         </article>
@@ -175,6 +180,11 @@
               <li>Contas por vencimento.</li>
               <li>Resumo mensal para decisao rapida.</li>
             </ul>
+            <div class="hero-actions compact">
+              <button class="button primary demo-trigger" type="button" data-demo="financeiro">
+                Ver demo personalizada
+              </button>
+            </div>
           </div>
           <div class="tab-preview"><strong>Resultado do mes</strong><small>Receitas menos despesas</small><b>+ R$ 4.280,00</b></div>
         </article>
@@ -189,6 +199,11 @@
               <li>Notas por atendimento.</li>
               <li>Pontos recorrentes para melhoria.</li>
             </ul>
+            <div class="hero-actions compact">
+              <button class="button primary demo-trigger" type="button" data-demo="feedbacks">
+                Ver demo personalizada
+              </button>
+            </div>
           </div>
           <div class="tab-preview"><strong>Nota media</strong><small>Ultimos 30 feedbacks</small><b>4,7 / 5</b></div>
         </article>
@@ -203,6 +218,11 @@
               <li>Controle de lotacao.</li>
               <li>Comunicacao com participantes.</li>
             </ul>
+            <div class="hero-actions compact">
+              <button class="button primary demo-trigger" type="button" data-demo="eventos">
+                Ver demo personalizada
+              </button>
+            </div>
           </div>
           <div class="tab-preview"><strong>Workshop sabado</strong><small>42 confirmados</small><b>8 vagas livres</b></div>
         </article>
@@ -218,19 +238,14 @@
             entrega, retirada e acompanhamento.
           </p>
           <p>
-            O projeto de referencia funcional sera o sistema Pedir Delivery informado por voce.
-            Ele servira como exemplo do fluxo que queremos demonstrar, sem ser o repositorio base
-            do ecossistema YG Systems.
+            O projeto de referencia funcional sera o sistema Pedir Delivery informado por voce,
+            usado apenas como inspiracao interna do fluxo. Para o visitante, a experiencia abre
+            uma demonstracao personalizada com nome, logo e cor do proprio negocio.
           </p>
           <div class="hero-actions">
-            <a
-              class="button primary"
-              href="https://github.com/guedesyc/https-pedir-delivery-app-hotflash-menu"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Abrir exemplo funcional
-            </a>
+            <button class="button primary demo-trigger" type="button" data-demo="restaurante">
+              Visualizar minha demo
+            </button>
             <a class="button secondary" href="#contato">Quero adaptar para meu negocio</a>
           </div>
         </div>
@@ -252,6 +267,24 @@
             <strong>Produtos e pedidos</strong>
             <small>Gestao basica para demonstracao comercial.</small>
           </div>
+        </div>
+      </section>
+
+      <section class="personalized-demo" id="demo-personalizada" hidden>
+        <div class="demo-shell">
+          <header class="demo-header">
+            <div class="demo-business">
+              <div class="demo-logo" id="demoLogo">YG</div>
+              <div>
+                <span id="demoProductName">YG Restaurante</span>
+                <strong id="demoBusinessName">Restaurante Demonstracao</strong>
+              </div>
+            </div>
+            <button class="button secondary demo-trigger" type="button" id="demoEditButton" data-demo="restaurante">
+              Personalizar novamente
+            </button>
+          </header>
+          <div class="demo-content" id="demoContent"></div>
         </div>
       </section>
 
@@ -314,8 +347,32 @@
 
     <footer>
       <span>YG Systems</span>
-      <span>Projeto novo do ecossistema. Pedir Delivery entra apenas como referencia do YG Restaurante.</span>
+      <span>Os repositorios de exemplo entram como referencia interna. O visitante ve demos personalizadas.</span>
     </footer>
+
+    <div class="modal" id="demoModal" hidden role="dialog" aria-modal="true" aria-labelledby="demoModalTitle">
+      <form class="modal-card" id="demoForm">
+        <button class="modal-close" type="button" id="demoModalClose" aria-label="Fechar">x</button>
+        <p class="eyebrow" id="demoModalProduct">Demo personalizada</p>
+        <h2 id="demoModalTitle">Veja como ficaria com a sua marca.</h2>
+        <p>
+          Informe os dados do negocio. Nada sera enviado para fora deste navegador nesta versao.
+        </p>
+        <label>
+          Nome da empresa
+          <input name="businessName" required placeholder="Ex: Bar do Joao" />
+        </label>
+        <label>
+          Logomarca opcional
+          <input name="businessLogo" type="file" accept=".png,.jpg,.jpeg,.webp,.svg" />
+        </label>
+        <label>
+          Cor principal
+          <input name="brandColor" type="color" value="#168bff" />
+        </label>
+        <button class="button primary" type="submit">Abrir minha demo</button>
+      </form>
+    </div>
 
     <script src="./script.js"></script>
   </body>

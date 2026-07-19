@@ -16,6 +16,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -180,7 +184,9 @@ p {
 
 .button {
   align-items: center;
+  border: 0;
   border-radius: var(--radius);
+  cursor: pointer;
   display: inline-flex;
   font-weight: 850;
   justify-content: center;
@@ -197,6 +203,11 @@ p {
 .button.secondary {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--line);
+}
+
+.button.primary:hover,
+.button.secondary:hover {
+  filter: brightness(1.08);
 }
 
 .hero-visual {
@@ -412,6 +423,186 @@ p {
   gap: 14px;
 }
 
+.personalized-demo {
+  margin-top: 44px;
+}
+
+.demo-shell {
+  background: rgba(10, 16, 32, 0.9);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.demo-header {
+  align-items: center;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--demo-accent, var(--accent)) 18%, transparent), rgba(5, 9, 20, 0.92)),
+    var(--surface);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+.demo-business {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
+.demo-logo {
+  align-items: center;
+  background: var(--demo-accent, var(--accent));
+  border-radius: var(--radius);
+  color: #fff;
+  display: flex;
+  font-weight: 900;
+  height: 56px;
+  justify-content: center;
+  overflow: hidden;
+  width: 56px;
+}
+
+.demo-logo img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.demo-business span {
+  color: var(--accent-2);
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.demo-business strong {
+  display: block;
+  font-size: 1.35rem;
+}
+
+.demo-content {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.demo-hero-card,
+.demo-metrics article,
+.demo-table article {
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.demo-hero-card {
+  background:
+    radial-gradient(circle at right top, color-mix(in srgb, var(--demo-accent, var(--accent)) 26%, transparent), transparent 18rem),
+    rgba(255, 255, 255, 0.045);
+}
+
+.demo-hero-card > span {
+  color: var(--accent-2);
+  font-size: 0.75rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.demo-hero-card h3 {
+  font-size: clamp(1.7rem, 3.2vw, 2.8rem);
+  margin: 8px 0;
+}
+
+.demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.demo-actions button {
+  background: color-mix(in srgb, var(--demo-accent, var(--accent)) 18%, #0a1020);
+  border: 1px solid color-mix(in srgb, var(--demo-accent, var(--accent)) 42%, rgba(133, 165, 214, 0.22));
+  border-radius: var(--radius);
+  color: var(--text);
+  font-weight: 780;
+  min-height: 40px;
+  padding: 0 12px;
+}
+
+.demo-metrics {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.demo-metrics article {
+  display: grid;
+  gap: 4px;
+}
+
+.demo-table {
+  display: grid;
+  gap: 10px;
+}
+
+.demo-table article {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 150px;
+}
+
+.demo-table b {
+  color: var(--success);
+  text-align: right;
+}
+
+.modal {
+  align-items: center;
+  background: rgba(5, 9, 20, 0.78);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 18px;
+  position: fixed;
+  z-index: 50;
+}
+
+.modal-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 14px;
+  max-width: 520px;
+  padding: 20px;
+  position: relative;
+  width: 100%;
+}
+
+.modal-close {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 850;
+  height: 32px;
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 32px;
+}
+
 .demo-panel {
   min-height: 150px;
 }
@@ -542,6 +733,15 @@ footer span:first-child {
   .tab-list {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  .demo-metrics,
+  .demo-table article {
+    grid-template-columns: 1fr;
+  }
+
+  .demo-table b {
+    text-align: left;
+  }
 }
 
 @media (max-width: 720px) {
@@ -554,8 +754,14 @@ footer span:first-child {
   .topbar nav,
   .steps,
   .tab-list,
+  .demo-metrics,
   .contact-form {
     grid-template-columns: 1fr;
+  }
+
+  .demo-header {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .topbar nav {
