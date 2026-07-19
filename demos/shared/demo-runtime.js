@@ -153,6 +153,7 @@
 
   function installBar(config) {
     replaceText(document.body, [
+      ["YG Bar", config.businessName],
       ["Tiago Diferenciado", config.businessName],
       ["TD", initials(config.businessName)],
     ]);
@@ -162,6 +163,7 @@
 
   function installEstoque(config) {
     replaceText(document.body, [
+      ["YG Estoque e Controle", config.businessName],
       ["Brownie da Keise", config.businessName],
       ["GestÃ£o de Vendas do Brownie da Keise.", `Gestao de vendas e estoque de ${config.businessName}.`],
       ["Feito por Yago Guedes", "Demo personalizada YG Systems"],
