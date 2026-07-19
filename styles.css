@@ -220,8 +220,8 @@ p {
   border-radius: var(--radius);
   height: 100%;
   max-height: 520px;
-  object-fit: cover;
-  opacity: 0.7;
+  object-fit: contain;
+  opacity: 0.82;
   width: 100%;
 }
 
