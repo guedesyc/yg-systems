@@ -6,13 +6,14 @@ Esta pasta e independente do repositorio de exemplo `pedirdelivery`. O projeto d
 
 ## Como visualizar localmente
 
-Abra o arquivo:
+Use o atalho:
 
 ```text
-index.html
+abrir-site.bat
 ```
 
-ou use um servidor estatico simples.
+Ele inicia um servidor local em Node e abre o site no navegador. Isso evita tela branca em demos
+com build moderno, como o Restaurante.
 
 ## Publicar no GitHub Pages
 
@@ -29,6 +30,7 @@ yg-systems/
 |   |-- yg-systems-logo.png
 |   `-- yg-systems-monogram.png
 |-- index.html
+|-- local-server.mjs
 |-- script.js
 |-- styles.css
 `-- README.md
@@ -38,7 +40,7 @@ yg-systems/
 
 - Produto: YG Restaurante
 - Referencia funcional: `https://github.com/guedesyc/https-pedir-delivery-app-hotflash-menu`
-- Papel da referencia: exemplo de fluxo e demonstracao, nao base de codigo do ecossistema.
+- Papel da referencia: base funcional da demo personalizada em `demos/restaurante`.
 
 ## Referencias por ecossistema
 
@@ -64,8 +66,9 @@ uma demo personalizada em uma nova pagina do proprio site.
 
 As demos atualmente conectadas a bases funcionais copiadas dos exemplos sao:
 
+- `demos/restaurante`
 - `demos/bar`
 - `demos/estoque`
 - `demos/eventos`
 
-As demos `restaurante`, `financeiro` e `feedbacks` existem como primeira estrutura local; podem ser substituidas por bases funcionais completas quando os respectivos repositorios/implementacoes forem definidos.
+As demos `financeiro` e `feedbacks` existem como primeira estrutura local; podem ser substituidas por bases funcionais completas quando os respectivos repositorios/implementacoes forem definidos.
