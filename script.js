@@ -1,6 +1,8 @@
 const form = document.querySelector("#leadForm");
 const note = document.querySelector("#formNote");
 
+document.body.classList.add("site-ready");
+
 form?.addEventListener("submit", (event) => {
   event.preventDefault();
 
@@ -17,8 +19,10 @@ form?.addEventListener("submit", (event) => {
 
   window.localStorage.setItem("yg-systems:last-lead-preview", JSON.stringify(payload));
 
-  note.textContent =
-    "Contato preparado em modo demonstracao. Nenhum dado foi enviado para fora deste navegador.";
-  note.classList.add("visible");
+  if (note) {
+    note.textContent =
+      "Contato preparado em modo demonstracao. Nenhum dado foi enviado para fora deste navegador.";
+    note.classList.add("visible");
+  }
   form.reset();
 });

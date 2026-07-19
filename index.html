@@ -15,9 +15,32 @@
     <meta property="og:image" content="./assets/yg-systems-logo.png" />
     <link rel="icon" href="./assets/yg-systems-monogram.png" />
     <link rel="stylesheet" href="./styles.css" />
+    <style>
+      body {
+        background: #050914;
+        color: #f6f9ff;
+      }
+
+      .page-fallback {
+        background: #0a1020;
+        border: 1px solid rgba(133, 165, 214, 0.22);
+        border-radius: 8px;
+        color: #f6f9ff;
+        margin: 16px;
+        padding: 14px;
+      }
+
+      .site-ready .page-fallback {
+        display: none;
+      }
+    </style>
     <title>YG Systems | Solucoes digitais para pequenos negocios</title>
   </head>
   <body>
+    <div class="page-fallback">
+      <strong>YG Systems</strong>
+      <span>Se voce esta vendo apenas esta mensagem, abra o arquivo index.html desta pasta ou use o atalho abrir-site.bat.</span>
+    </div>
     <header class="topbar">
       <a class="brand" href="#inicio" aria-label="YG Systems">
         <img src="./assets/yg-systems-monogram.png" alt="" />
