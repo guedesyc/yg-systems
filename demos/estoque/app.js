@@ -1,4 +1,5 @@
-const STORAGE_KEY = "yg-systems-estoque-demo-v2";
+const demoStoragePrefix = window.YG_DEMO_STORAGE_PREFIX || "yg-systems:demo-state:estoque-preview";
+const STORAGE_KEY = `${demoStoragePrefix}:estoque:state-v2`;
 const editing = {
   ingredientId: null,
   recipeId: null,

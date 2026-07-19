@@ -62,9 +62,10 @@ const menuItems = [
 
 const tableCount = 16;
 const categories = [...new Set(menuItems.map((item) => item.category))];
-const stateKey = "yg-systems-bar-demo-state-v2";
-const legacyStateKey = "yg-systems-bar-demo-state-v1";
-const roleKey = "yg-systems-bar-demo-role";
+const demoStoragePrefix = window.YG_DEMO_STORAGE_PREFIX || "yg-systems:demo-state:bar-preview";
+const stateKey = `${demoStoragePrefix}:bar:state-v2`;
+const legacyStateKey = `${demoStoragePrefix}:bar:state-v1`;
+const roleKey = `${demoStoragePrefix}:bar:role`;
 const rolePermissions = {
   publico: ["menu"],
   garcom: ["waiter", "kitchen"],

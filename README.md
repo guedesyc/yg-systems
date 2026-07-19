@@ -57,9 +57,10 @@ uma demo personalizada em uma nova pagina do proprio site.
 
 1. O visitante escolhe um ecossistema.
 2. O site abre uma tela para informar nome da empresa, logo opcional e cor principal.
-3. A configuracao fica salva temporariamente no navegador em `localStorage`.
+3. A configuracao fica salva temporariamente no navegador em `localStorage`, sempre com uma sessao unica.
 4. O site abre uma nova pagina em `demos/{modelo}/index.html`.
 5. A demo carrega a configuracao e aplica nome, logo e cor por cima da base funcional daquele modelo.
+6. Cada pagina de demo usa chaves proprias por sessao, para nao misturar testes de clientes diferentes nem alterar o portal principal.
 
 As demos atualmente conectadas a bases funcionais copiadas dos exemplos sao:
 

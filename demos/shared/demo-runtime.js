@@ -47,7 +47,7 @@
   }
 
   function installEventosApiMock() {
-    const key = "yg-systems:eventos-demo:bets";
+    const key = `${window.YG_DEMO_STORAGE_PREFIX}:eventos:bets`;
     const read = () => {
       const raw = window.localStorage.getItem(key);
       if (raw) return JSON.parse(raw);
@@ -201,6 +201,8 @@
   }
 
   window.YG_DEMO_CONFIG = getConfig();
+  window.YG_DEMO_SESSION_ID = sessionId || "preview";
+  window.YG_DEMO_STORAGE_PREFIX = `yg-systems:demo-state:${window.YG_DEMO_SESSION_ID}`;
   if (window.location.pathname.includes("/eventos/")) {
     installEventosApiMock();
   }
