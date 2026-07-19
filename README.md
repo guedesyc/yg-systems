@@ -12,8 +12,8 @@ Use o atalho:
 abrir-site.bat
 ```
 
-Ele inicia um servidor local em Node e abre o site no navegador. Isso evita tela branca em demos
-com build moderno, como o Restaurante.
+Ele inicia um servidor local em Node e abre o site no navegador. As demos tambem foram mantidas
+em HTML, CSS e JavaScript estatico para funcionarem bem no GitHub Pages e em testes locais.
 
 ## Publicar no GitHub Pages
 
