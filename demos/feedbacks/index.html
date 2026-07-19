@@ -1,26 +1,233 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>YG Feedbacks</title>
-    <link rel="stylesheet" href="../shared/demo-runtime.css" />
-    <link rel="stylesheet" href="../restaurante/styles.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pesquisa de Satisfacao - Restaurante Popular Lauro de Freitas</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="restaurant-app">
-      <section class="hero-card">
-        <p class="eyebrow">Feedbacks</p>
-        <h1 data-business-name>Empresa Demonstracao</h1>
-        <p>Coleta de opinioes, notas e sugestoes para melhorar o atendimento.</p>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <img id="brandLogo" src="assets/logo-lemospassos.png" alt="Grupo LemosPassos" />
+          <div>
+            <p class="eyebrow">Pesquisa de Satisfacao</p>
+            <h1 id="unitName">Restaurante Popular Lauro de Freitas</h1>
+          </div>
+        </div>
+        <button class="ghost-button" type="button" id="openAdmin">Admin</button>
+      </header>
+
+      <main>
+        <section class="hero-panel">
+          <div>
+            <p class="eyebrow">Sua opiniao e muito importante para nos</p>
+            <h2>Conte como foi sua refeicao hoje.</h2>
+            <p>
+              Selecione o que voce comeu e avalie sua experiencia. As respostas
+              ajudam a melhorar o atendimento, o cardapio e o ambiente.
+            </p>
+          </div>
+          <div class="daily-menu" aria-live="polite">
+            <span>Cardapio do dia</span>
+            <ul id="menuPreview"></ul>
+          </div>
+        </section>
+
+        <form id="surveyForm" class="survey-form">
+          <section class="form-section">
+            <div class="section-heading">
+              <span>1</span>
+              <div>
+                <h3>Identificacao</h3>
+                <p>Informe seu nome completo, caso deseje se identificar.</p>
+              </div>
+            </div>
+            <label class="field">
+              <span>Nome completo <small>(opcional)</small></span>
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                placeholder="Digite seu nome completo"
+                autocomplete="name"
+              />
+            </label>
+          </section>
+
+          <section class="form-section">
+            <div class="section-heading">
+              <span>2</span>
+              <div>
+                <h3>Frequencia</h3>
+                <p>Com que frequencia voce costuma frequentar o estabelecimento?</p>
+              </div>
+            </div>
+            <div class="menu-options frequency-options">
+              <label class="check-card">
+                <input type="radio" name="frequency" value="1-2x na semana" required />
+                <span>1-2x na semana<small>Frequencia semanal</small></span>
+              </label>
+              <label class="check-card">
+                <input type="radio" name="frequency" value="3-4x na semana" required />
+                <span>3-4x na semana<small>Frequencia semanal</small></span>
+              </label>
+              <label class="check-card">
+                <input type="radio" name="frequency" value="Mais de 5x na semana" required />
+                <span>Mais de 5x na semana<small>Frequencia semanal</small></span>
+              </label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <div class="section-heading">
+              <span>3</span>
+              <div>
+                <h3>O que voce comeu?</h3>
+                <p>Selecione os itens consumidos na refeicao.</p>
+              </div>
+            </div>
+            <div class="menu-options" id="menuOptions"></div>
+          </section>
+
+          <section class="form-section">
+            <div class="section-heading">
+              <span>4</span>
+              <div>
+                <h3>Avaliacao</h3>
+                <p>
+                  Use a escala: 1 estrela extremamente ruim, 5 estrelas
+                  extremamente bom.
+                </p>
+              </div>
+            </div>
+            <div id="questions" class="questions"></div>
+          </section>
+
+          <section class="form-section">
+            <div class="section-heading">
+              <span>5</span>
+              <div>
+                <h3>Comentarios</h3>
+                <p>Gostaria de deixar uma sugestao, elogio ou critica?</p>
+              </div>
+            </div>
+            <label class="field">
+              <span>Comentario opcional</span>
+              <textarea
+                id="comments"
+                name="comments"
+                rows="4"
+                placeholder="Escreva aqui seu comentario"
+              ></textarea>
+            </label>
+          </section>
+
+          <div class="form-actions">
+            <button class="primary-button" type="submit">Enviar avaliacao</button>
+            <button class="secondary-button" type="reset">Limpar</button>
+          </div>
+        </form>
+      </main>
+
+      <footer>
+        <span>Obrigado por participar.</span>
+        <span>Pesquisa personalizada pela YG Systems.</span>
+      </footer>
+    </div>
+
+    <div class="modal" id="adminModal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-admin></div>
+      <section class="admin-panel" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+        <button class="close-button" type="button" data-close-admin aria-label="Fechar">x</button>
+
+        <div id="loginView">
+          <p class="eyebrow">Acesso administrativo</p>
+          <h2 id="adminTitle">Entrar no painel</h2>
+          <form id="loginForm" class="admin-form">
+            <label class="field">
+              <span>Usuario</span>
+              <input type="text" id="adminUser" autocomplete="username" required />
+            </label>
+            <label class="field">
+              <span>Senha</span>
+              <input type="password" id="adminPass" autocomplete="current-password" required />
+            </label>
+            <button class="primary-button" type="submit">Entrar</button>
+            <p class="help-text">Usuario padrao: admin | Senha padrao: admin1234</p>
+          </form>
+        </div>
+
+        <div id="adminView" hidden>
+          <p class="eyebrow">Painel administrativo</p>
+          <h2>Cardapio, relatorios e parametros</h2>
+
+          <form id="menuForm" class="admin-form">
+            <div class="two-column">
+              <label class="field">
+                <span>Prato principal</span>
+                <input type="text" id="mainDish" required />
+              </label>
+              <label class="field">
+                <span>Prato opcao</span>
+                <input type="text" id="optionDish" required />
+              </label>
+              <label class="field">
+                <span>Guarnicao 1</span>
+                <input type="text" id="sideOne" required />
+              </label>
+              <label class="field">
+                <span>Guarnicao 2</span>
+                <input type="text" id="sideTwo" required />
+              </label>
+            </div>
+            <button class="primary-button" type="submit">Salvar cardapio</button>
+          </form>
+
+          <div class="admin-tools">
+            <div>
+              <h3>Exportacao manual</h3>
+              <p id="responseCount">0 respostas registradas</p>
+            </div>
+            <button class="secondary-button" type="button" id="exportXlsx">
+              Exportar XLSX
+            </button>
+          </div>
+
+          <div class="future-box">
+            <h3>Envio automatico futuro</h3>
+            <label class="field">
+              <span>E-mails para receber relatorio quinzenal</span>
+              <input
+                type="text"
+                id="reportEmails"
+                placeholder="exemplo@empresa.com.br, outro@empresa.com.br"
+              />
+            </label>
+            <p>
+              Campo preparado para a fase com banco de dados e hospedagem com
+              backend. Nesta versao, os e-mails ficam salvos apenas neste
+              navegador.
+            </p>
+          </div>
+
+          <div class="danger-zone">
+            <button class="danger-button" type="button" id="clearResponses">
+              Apagar respostas salvas neste navegador
+            </button>
+            <button class="ghost-button" type="button" id="logoutAdmin">Sair</button>
+          </div>
+        </div>
       </section>
-      <section class="menu-grid">
-        <article><span>Nota media</span><strong>4,7 / 5</strong><button>Ver respostas</button></article>
-        <article><span>Sugestoes</span><strong>6 novas</strong><button>Avaliar pontos</button></article>
-        <article><span>Satisfacao</span><strong>92%</strong><button>Criar formulario</button></article>
-      </section>
-    </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
     <script src="../shared/demo-runtime.js"></script>
-    <script src="demo-adapter.js"></script>
+    <script src="feedback-config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="script.js"></script>
   </body>
 </html>
