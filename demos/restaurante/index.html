@@ -9,8 +9,8 @@
   </head>
   <body>
     <main class="restaurant-shell">
-      <header class="topbar">
-        <div class="brand">
+      <header class="restaurant-topbar">
+        <div class="restaurant-brand">
           <div class="brand-mark">YG</div>
           <div>
             <p class="eyebrow">YG Restaurante</p>
@@ -18,65 +18,67 @@
             <span>Cardapio, pedidos e atendimento em uma demo funcional.</span>
           </div>
         </div>
-        <nav class="tabs" aria-label="Navegacao da demo">
+        <nav class="restaurant-tabs" aria-label="Sistema demonstrativo">
           <button class="active" type="button" data-view="cardapio">Cardapio</button>
           <button type="button" data-view="status">Status</button>
           <button type="button" data-view="admin">Admin</button>
         </nav>
       </header>
 
-      <section class="view active" id="cardapio">
+      <section class="view active customer-layout" id="cardapio">
         <div class="menu-column">
-          <section class="hero-panel">
+          <section class="menu-hero">
             <div>
+              <div class="hero-status"><span>Aberto agora</span><span>Todos os dias, 18h as 23h30</span></div>
               <p class="eyebrow">Bem-vindo a</p>
-              <h2>YG Restaurante</h2>
+              <h2>Monte seu pedido em poucos passos.</h2>
               <p>Monte um pedido, escolha entrega ou retirada e veja como a mensagem seria preparada.</p>
             </div>
-            <div class="order-total">
+            <div class="pix-box">
               <span>Pedido atual</span>
               <strong id="heroTotal">R$ 0,00</strong>
+              <small id="heroItemCount">0 item(ns) no carrinho</small>
             </div>
           </section>
 
-          <section class="panel">
+          <section class="builder">
             <div class="section-heading">
               <div>
                 <p class="eyebrow">Passo 1</p>
-                <h3>Escolha o produto</h3>
+                <h2>Escolha o produto</h2>
               </div>
               <span id="productCount">0 opcoes</span>
             </div>
             <div class="product-grid" id="productGrid"></div>
-          </section>
 
-          <section class="panel">
-            <div class="section-heading">
+            <div class="flavor-panel">
               <div>
                 <p class="eyebrow">Passo 2</p>
                 <h3>Escolha os sabores</h3>
+                <p id="flavorSelectionCount">0 selecionado(s)</p>
               </div>
-              <span id="selectedProductLabel">Pizza Grande</span>
+              <h3 id="selectedProductLabel">Pizza Grande</h3>
+              <div class="type-tabs" id="typeTabs" aria-label="Tipo de sabor"></div>
+              <div class="flavor-list scroll-area" id="flavorGrid"></div>
+              <label class="field full">
+                Observacao
+                <textarea id="notes" placeholder="Ex: sem cebola, massa bem assada"></textarea>
+              </label>
+              <button class="primary-action" id="addToCart" type="button">Adicionar ao carrinho</button>
             </div>
-            <div class="flavor-grid" id="flavorGrid"></div>
-            <label class="field full">
-              Observacao
-              <textarea id="notes" placeholder="Ex: sem cebola, massa bem assada"></textarea>
-            </label>
-            <button class="primary-action" id="addToCart" type="button">Adicionar ao carrinho</button>
           </section>
         </div>
 
-        <aside class="checkout">
+        <aside class="checkout-panel">
           <div class="section-heading">
             <div>
               <p class="eyebrow">Passo 3</p>
-              <h3>Resumo</h3>
+              <h2>Resumo</h2>
             </div>
             <strong id="cartTotal">R$ 0,00</strong>
           </div>
-          <div class="cart-list" id="cartList"></div>
-          <div class="customer-grid">
+          <div class="cart-items" id="cartList"></div>
+          <div class="customer-form">
             <label class="field">
               Nome
               <input id="customerName" autocomplete="name" />
@@ -85,7 +87,7 @@
               WhatsApp
               <input id="customerPhone" autocomplete="tel" inputmode="tel" />
             </label>
-            <div class="choice full">
+            <div class="choice-group full">
               <span>Como deseja receber?</span>
               <div>
                 <button class="active" type="button" data-fulfillment="Entrega">Entrega</button>
@@ -96,7 +98,7 @@
               Endereco de entrega
               <textarea id="customerAddress"></textarea>
             </label>
-            <div class="choice full">
+            <div class="choice-group full">
               <span>Forma de pagamento</span>
               <div>
                 <button class="active" type="button" data-payment="Pix">Pix</button>
@@ -105,33 +107,35 @@
               </div>
             </div>
           </div>
-          <button class="primary-action full" id="finishOrder" type="button">Simular finalizacao do pedido</button>
+          <div class="payment-card"><span>Pagamento via Pix</span><strong>demo@ygsystems.com.br</strong><small id="paymentTotal">Total: R$ 0,00</small></div>
+          <button class="whatsapp-action" id="finishOrder" type="button">Simular finalizacao do pedido</button>
         </aside>
       </section>
 
       <section class="view" id="status">
-        <section class="panel">
+        <section class="status-page embedded">
           <div class="section-heading">
             <div>
               <p class="eyebrow">Acompanhamento</p>
-              <h3>Status do pedido</h3>
+              <h2>Status do pedido</h2>
             </div>
             <span id="lastOrderLabel">Nenhum pedido novo</span>
           </div>
-          <div class="status-list" id="statusList"></div>
+          <div class="order-list" id="statusList"></div>
         </section>
       </section>
 
       <section class="view" id="admin">
-        <section class="panel">
+        <section class="admin-page">
+        <section class="admin-band">
           <div class="section-heading">
             <div>
               <p class="eyebrow">Demo isolada</p>
-              <h3>Painel administrativo</h3>
+              <h2>Painel administrativo</h2>
             </div>
             <button class="secondary-action" id="resetDemo" type="button">Restaurar dados ficticios</button>
           </div>
-          <div class="admin-grid">
+          <div class="settings-grid admin-grid">
             <article>
               <span>Pedidos</span>
               <strong id="ordersMetric">0</strong>
@@ -145,7 +149,11 @@
               <strong id="ticketMetric">R$ 0,00</strong>
             </article>
           </div>
+        </section>
+        <section class="admin-panel wide">
+          <div class="section-heading"><h2>Pedidos e comandas</h2><span id="adminOrderCount">0 pedidos</span></div>
           <div class="admin-orders" id="adminOrders"></div>
+        </section>
         </section>
       </section>
     </main>
