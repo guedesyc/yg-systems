@@ -66,6 +66,10 @@
             Produtos web para pedidos, atendimentos, estoque, controle financeiro, feedbacks e
             eventos. Tudo pensado para você sair do improviso e enxergar sua operação com clareza.
           </p>
+          <p class="impact-line">
+            Você cuida do negócio.<br />
+            O sistema cuida da organização.
+          </p>
           <div class="hero-actions">
             <a class="button primary" href="#ecossistema">Ver ecossistemas</a>
             <a class="button secondary" href="#demonstracao">Conhecer os exemplos</a>
@@ -94,22 +98,24 @@
 
       <section class="organization-flow" aria-label="Como a YG Systems organiza sua rotina">
         <div class="messy-side">
-          <span>Papel</span>
-          <span>WhatsApp</span>
-          <span>Planilhas</span>
-          <span>Caderno</span>
+          <span class="flow-item">Papel</span>
+          <span class="flow-item">WhatsApp</span>
+          <span class="flow-item">Planilhas</span>
+          <span class="flow-item">Caderno</span>
         </div>
+        <div class="flow-arrow arrow-left" aria-hidden="true">→</div>
         <div class="flow-center">
           <img src="./assets/yg-systems-monogram.png" alt="" />
           <strong>YG Systems</strong>
         </div>
+        <div class="flow-arrow arrow-right" aria-hidden="true">→</div>
         <div class="organized-side">
-          <span>Dashboard</span>
-          <span>Pedidos</span>
-          <span>Clientes</span>
-          <span>Financeiro</span>
-          <span>Estoque</span>
-          <strong>Tudo organizado.</strong>
+          <span class="flow-item">Dashboard</span>
+          <span class="flow-item">Pedidos</span>
+          <span class="flow-item">Clientes</span>
+          <span class="flow-item">Financeiro</span>
+          <span class="flow-item">Estoque</span>
+          <strong class="flow-item">Tudo organizado.</strong>
         </div>
       </section>
 
@@ -137,7 +143,7 @@
           <button class="tab-button active" type="button" role="tab" aria-selected="true" aria-controls="tab-restaurante" data-tab="restaurante">YG Pedidos</button>
           <button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tab-bar" data-tab="bar">YG Atendimentos</button>
           <button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tab-estoque" data-tab="estoque">Estoque e Controle</button>
-          <button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tab-financeiro" data-tab="financeiro">Financeiro</button>
+          <button class="tab-button locked" type="button" role="tab" aria-selected="false" aria-controls="tab-financeiro" data-tab="financeiro">Financeiro <span aria-hidden="true">🔒</span></button>
           <button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tab-feedbacks" data-tab="feedbacks">Feedbacks</button>
           <button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tab-eventos" data-tab="eventos">Eventos</button>
         </div>
@@ -163,6 +169,11 @@
             </div>
           </div>
           <div class="tab-preview restaurant-preview">
+            <div class="mini-flow" aria-hidden="true">
+              <span>Cliente escolhe</span>
+              <span>Pedido criado</span>
+              <span>Equipe recebe</span>
+            </div>
             <strong>Pedido organizado</strong>
             <small>Pizza grande, 2 sabores, entrega e pagamento no mesmo fluxo.</small>
             <span>Antes: anotação solta</span>
@@ -190,7 +201,7 @@
               </button>
             </div>
           </div>
-          <div class="tab-preview"><strong>Mesa 08</strong><small>Comanda aberta, itens separados por consumo e fechamento mais rápido.</small><b>R$ 86,40</b></div>
+          <div class="tab-preview"><div class="mini-flow" aria-hidden="true"><span>Mesa aberta</span><span>Item lançado</span><span>Fechamento</span></div><strong>Mesa 08</strong><small>Comanda aberta, itens separados por consumo e fechamento mais rápido.</small><b>R$ 86,40</b></div>
         </article>
 
         <article class="tab-panel" id="tab-estoque" role="tabpanel" data-panel="estoque" hidden>
@@ -212,7 +223,7 @@
               </button>
             </div>
           </div>
-          <div class="tab-preview"><strong>Baixo estoque</strong><small>6 itens precisam de reposição antes do próximo turno.</small><b>Atualizar lista</b></div>
+          <div class="tab-preview"><div class="mini-flow" aria-hidden="true"><span>Entrada</span><span>Saída</span><span>Alerta</span></div><strong>Baixo estoque</strong><small>6 itens precisam de reposição antes do próximo turno.</small><b>Atualizar lista</b></div>
         </article>
 
         <article class="tab-panel" id="tab-financeiro" role="tabpanel" data-panel="financeiro" hidden>
@@ -229,12 +240,12 @@
               <li>A tomada de decisão fica mais tranquila porque os números aparecem com clareza.</li>
             </ul>
             <div class="hero-actions compact">
-              <button class="button primary demo-trigger" type="button" data-demo="financeiro">
-                Ver demo personalizada
+              <button class="button primary locked-button" type="button" disabled aria-disabled="true">
+                Demo em breve
               </button>
             </div>
           </div>
-          <div class="tab-preview"><strong>Resultado do mês</strong><small>Receitas, despesas e vencimentos reunidos para leitura rápida.</small><b>+ R$ 4.280,00</b></div>
+          <div class="tab-preview locked-preview"><div class="mini-lock" aria-hidden="true">🔒</div><strong>Financeiro em preparação</strong><small>Este módulo ficará disponível quando a demonstração financeira estiver pronta.</small><b>Em breve</b></div>
         </article>
 
         <article class="tab-panel" id="tab-feedbacks" role="tabpanel" data-panel="feedbacks" hidden>
@@ -256,7 +267,7 @@
               </button>
             </div>
           </div>
-          <div class="tab-preview"><strong>Nota média</strong><small>Últimos feedbacks organizados em uma leitura prática.</small><b>4,7 / 5</b></div>
+          <div class="tab-preview"><div class="mini-flow" aria-hidden="true"><span>Avaliação</span><span>Nota</span><span>Melhoria</span></div><strong>Nota média</strong><small>Últimos feedbacks organizados em uma leitura prática.</small><b>4,7 / 5</b></div>
         </article>
 
         <article class="tab-panel" id="tab-eventos" role="tabpanel" data-panel="eventos" hidden>
@@ -278,7 +289,7 @@
               </button>
             </div>
           </div>
-          <div class="tab-preview"><strong>Workshop sábado</strong><small>Participantes confirmados, vagas livres e instruções no mesmo lugar.</small><b>8 vagas livres</b></div>
+          <div class="tab-preview"><div class="mini-flow" aria-hidden="true"><span>Inscrição</span><span>Confirmação</span><span>Lista</span></div><strong>Workshop sábado</strong><small>Participantes confirmados, vagas livres e instruções no mesmo lugar.</small><b>8 vagas livres</b></div>
         </article>
       </section>
 
@@ -393,6 +404,13 @@
         <button class="button primary" type="submit">Abrir minha demo</button>
         <p class="form-note" id="demoFormNote" role="status"></p>
       </form>
+    </div>
+
+    <div class="demo-loading" id="demoLoading" hidden aria-live="polite" aria-label="Preparando demonstração">
+      <div class="loading-card">
+        <img src="./assets/yg-systems-monogram.png" alt="" />
+        <p id="demoLoadingText">Aplicando identidade visual</p>
+      </div>
     </div>
 
     <script src="./script.js"></script>

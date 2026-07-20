@@ -15,6 +15,8 @@ const detailBenefits = document.querySelector("#ecosystem-detail-benefits");
 const detailPreview = document.querySelector("#ecosystem-detail-preview");
 const detailDemo = document.querySelector("#ecosystem-detail-demo");
 const detailSection = document.querySelector("#demonstracao");
+const demoLoading = document.querySelector("#demoLoading");
+const demoLoadingText = document.querySelector("#demoLoadingText");
 
 const demoPaths = {
   restaurante: "demos/restaurante/index.html",
@@ -76,6 +78,7 @@ const demoProducts = {
   },
   financeiro: {
     name: "Financeiro",
+    locked: true,
     title: "Transforme entradas e saídas em decisões mais tranquilas para o seu negócio.",
     copy:
       "Você passa a acompanhar o dinheiro que entra, o que precisa ser pago e o resultado do período sem juntar papéis e mensagens no fim do mês.",
@@ -135,12 +138,18 @@ function updateEcosystemDetail(tabName) {
   if (detailTitle) detailTitle.textContent = product.title;
   if (detailCopy) detailCopy.textContent = product.copy;
   if (detailBenefits) detailBenefits.innerHTML = product.benefits.map((benefit) => `<li>${benefit}</li>`).join("");
-  if (detailDemo) detailDemo.dataset.demo = tabName;
+  if (detailDemo) {
+    detailDemo.dataset.demo = tabName;
+    detailDemo.disabled = Boolean(product.locked);
+    detailDemo.classList.toggle("locked-button", Boolean(product.locked));
+    detailDemo.textContent = product.locked ? "Demo em breve" : "Visualizar minha demo";
+    detailDemo.setAttribute("aria-disabled", String(Boolean(product.locked)));
+  }
   if (detailPreview) {
     detailPreview.innerHTML = product.preview
       .map(
         ([label, title, copy], index) =>
-          `<div class="demo-panel ${index === 0 ? "menu" : index === 1 ? "order" : "admin"}"><span>${label}</span><strong>${title}</strong><small>${copy}</small></div>`,
+          `<div class="demo-panel ${index === 0 ? "menu" : index === 1 ? "order" : "admin"}"><span>${label}</span><strong>${title}</strong><small>${copy}</small><i></i></div>`,
       )
       .join("");
   }
@@ -167,6 +176,7 @@ function activateTab(tabName) {
 
 function openDemoModal(productKey) {
   selectedDemo = productKey || "restaurante";
+  if (demoProducts[selectedDemo]?.locked) return;
   if (demoModalProduct) demoModalProduct.textContent = demoProducts[selectedDemo].name;
   if (demoFormNote) demoFormNote.textContent = "";
   if (demoModal) demoModal.hidden = false;
@@ -176,7 +186,8 @@ function closeDemoModal() {
   if (demoModal) demoModal.hidden = true;
 }
 
-function renderDemo({ businessName, brandColor, logo }) {
+function buildDemoUrl({ businessName, brandColor, logo }) {
+  if (demoProducts[selectedDemo]?.locked) return "";
   const sessionId = crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const payload = {
     businessName,
@@ -194,12 +205,75 @@ function renderDemo({ businessName, brandColor, logo }) {
       localStorage.setItem(`yg-systems:demo:${sessionId}`, JSON.stringify(payload));
     } catch {
       if (demoFormNote) demoFormNote.textContent = "Não foi possível preparar esta demo. Feche algumas demos abertas e tente novamente.";
-      return false;
+      return "";
     }
   }
-  const url = `${demoPaths[selectedDemo] || demoPaths.restaurante}?demoSession=${encodeURIComponent(sessionId)}`;
-  if (!window.open(url, "_blank")) window.location.assign(url);
-  return true;
+  return `${demoPaths[selectedDemo] || demoPaths.restaurante}?demoSession=${encodeURIComponent(sessionId)}`;
+}
+
+function writeLoadingPage(targetWindow, url) {
+  const safeUrl = JSON.stringify(url);
+  const logoUrl = JSON.stringify(new URL("./assets/yg-systems-monogram.png", window.location.href).href);
+  targetWindow.document.open();
+  targetWindow.document.write(`<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YG Systems | Preparando demo</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      align-items: center;
+      background: #000;
+      color: #f6f9ff;
+      display: grid;
+      font-family: Inter, ui-sans-serif, system-ui, "Segoe UI", Arial, sans-serif;
+      justify-items: center;
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px;
+      text-align: center;
+    }
+    main { display: grid; gap: 18px; justify-items: center; max-width: 520px; }
+    img { border: 1px solid rgba(59,185,255,.34); border-radius: 8px; height: 86px; object-fit: cover; width: 86px; }
+    p { font-size: clamp(1.5rem, 5vw, 3rem); font-weight: 900; line-height: 1.05; margin: 0; }
+    .bar { background: rgba(255,255,255,.12); border-radius: 999px; height: 8px; overflow: hidden; width: min(360px, 70vw); }
+    .bar span { animation: load 6s linear forwards; background: linear-gradient(90deg, #168bff, #3bb9ff); display: block; height: 100%; width: 0; }
+    @keyframes load { to { width: 100%; } }
+  </style>
+</head>
+<body>
+  <main>
+    <img src=${logoUrl} alt="" />
+    <p id="loadingText">Aplicando identidade visual</p>
+    <div class="bar"><span></span></div>
+  </main>
+  <script>
+    const messages = ["Aplicando identidade visual", "Personalizando sistema", "Seja bem-vindo ao YG Systems."];
+    const text = document.getElementById("loadingText");
+    setTimeout(() => { text.textContent = messages[1]; }, 2000);
+    setTimeout(() => { text.textContent = messages[2]; }, 4000);
+    setTimeout(() => { window.location.href = ${safeUrl}; }, 6000);
+  <\/script>
+</body>
+</html>`);
+  targetWindow.document.close();
+}
+
+function showInlineLoading(url) {
+  const messages = ["Aplicando identidade visual", "Personalizando sistema", "Seja bem-vindo ao YG Systems."];
+  let index = 0;
+  if (demoLoadingText) demoLoadingText.textContent = messages[index];
+  if (demoLoading) demoLoading.hidden = false;
+  const timer = setInterval(() => {
+    index += 1;
+    if (demoLoadingText && messages[index]) demoLoadingText.textContent = messages[index];
+    if (index >= messages.length - 1) clearInterval(timer);
+  }, 2000);
+  setTimeout(() => {
+    window.location.assign(url);
+  }, 6000);
 }
 
 async function shrinkLogo(file) {
@@ -266,15 +340,20 @@ demoLogoInput?.addEventListener("change", async (event) => {
 demoForm?.addEventListener("submit", (event) => {
   event.preventDefault();
   const data = new FormData(demoForm);
-  if (
-    renderDemo({
-      businessName: String(data.get("businessName") || "Empresa Demonstração"),
-      brandColor: String(data.get("brandColor") || "#168bff"),
-      logo: logoDataUrl,
-    })
-  ) {
-    closeDemoModal();
+  const url = buildDemoUrl({
+    businessName: String(data.get("businessName") || "Empresa Demonstração"),
+    brandColor: String(data.get("brandColor") || "#168bff"),
+    logo: logoDataUrl,
+  });
+  if (!url) return;
+  const absoluteUrl = new URL(url, window.location.href).href;
+  const targetWindow = window.open("", "_blank");
+  closeDemoModal();
+  if (targetWindow) {
+    writeLoadingPage(targetWindow, absoluteUrl);
+    return;
   }
+  showInlineLoading(absoluteUrl);
 });
 
 form?.addEventListener("submit", (event) => {
