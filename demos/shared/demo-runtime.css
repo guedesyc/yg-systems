@@ -49,6 +49,13 @@
   width: 42px;
 }
 
+.yg-demo-inner-logo {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  object-fit: contain !important;
+  padding: 4px;
+}
+
 .yg-demo-logo-text {
   align-items: center;
   background: var(--yg-demo-color);

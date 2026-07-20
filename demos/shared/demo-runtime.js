@@ -138,6 +138,13 @@
     return `<span class="yg-demo-logo-text">${initials(config.businessName)}</span>`;
   }
 
+  function applyLogoToImage(image, config) {
+    if (!image || !config.logo) return;
+    image.src = config.logo;
+    image.alt = `Logo de ${config.businessName}`;
+    image.classList.add("yg-demo-inner-logo");
+  }
+
   function replaceText(root, replacements) {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     const nodes = [];
@@ -182,6 +189,24 @@
     });
     replaceText(document.body, replacements);
     replaceAttributes(document.body, replacements);
+  }
+
+  function installInternalLogo(config) {
+    if (!config.logo) return;
+
+    document.querySelectorAll("#brandLogo, .hero-logo, .qr, .brand-block img").forEach((image) => {
+      applyLogoToImage(image, config);
+    });
+
+    const brandMark = document.querySelector(".brand-mark");
+    if (brandMark) {
+      brandMark.outerHTML = logoHtml(config);
+    }
+
+    const sidebar = document.querySelector(".sidebar > div");
+    if (sidebar && !sidebar.querySelector(".yg-demo-logo-img, .yg-demo-logo-text")) {
+      sidebar.insertAdjacentHTML("afterbegin", logoHtml(config));
+    }
   }
 
   function normalizeHex(color) {
@@ -255,8 +280,7 @@
       ["Tiago Diferenciado", config.businessName],
       ["TD", initials(config.businessName)],
     ]);
-    const brandMark = document.querySelector(".brand-mark");
-    if (brandMark) brandMark.outerHTML = logoHtml(config);
+    installInternalLogo(config);
   }
 
   function installEstoque(config) {
@@ -266,10 +290,7 @@
       ["GestÃ£o de Vendas do Brownie da Keise.", `Gestao de vendas e estoque de ${config.businessName}.`],
       ["Feito por Yago Guedes", "Demo personalizada YG Systems"],
     ]);
-    const sidebar = document.querySelector(".sidebar > div");
-    if (sidebar && !sidebar.querySelector(".yg-demo-logo-img, .yg-demo-logo-text")) {
-      sidebar.insertAdjacentHTML("afterbegin", logoHtml(config));
-    }
+    installInternalLogo(config);
   }
 
   function installEventos(config) {
@@ -280,12 +301,14 @@
     ]);
     const pixKey = document.querySelector("#pixKey");
     if (pixKey) pixKey.textContent = "demo@ygsystems.com.br";
+    installInternalLogo(config);
   }
 
   function installCommon(config) {
     applyThemeVariables(config);
     document.title = `${config.businessName} | ${config.product}`;
     installPersonalizedName(config);
+    installInternalLogo(config);
     document.body.insertAdjacentHTML(
       "afterbegin",
       `<aside class="yg-demo-bar">
