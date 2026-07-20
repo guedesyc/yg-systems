@@ -184,6 +184,71 @@
     replaceAttributes(document.body, replacements);
   }
 
+  function normalizeHex(color) {
+    const value = String(color || "").trim();
+    if (/^#[0-9a-fA-F]{6}$/.test(value)) return value;
+    if (/^#[0-9a-fA-F]{3}$/.test(value)) {
+      return `#${value[1]}${value[1]}${value[2]}${value[2]}${value[3]}${value[3]}`;
+    }
+    return "#168bff";
+  }
+
+  function hexToRgb(color) {
+    const hex = normalizeHex(color).slice(1);
+    return {
+      r: parseInt(hex.slice(0, 2), 16),
+      g: parseInt(hex.slice(2, 4), 16),
+      b: parseInt(hex.slice(4, 6), 16),
+    };
+  }
+
+  function rgbToHex({ r, g, b }) {
+    return `#${[r, g, b].map((value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, "0")).join("")}`;
+  }
+
+  function mix(color, target, amount) {
+    const from = hexToRgb(color);
+    const to = hexToRgb(target);
+    return rgbToHex({
+      r: from.r * amount + to.r * (1 - amount),
+      g: from.g * amount + to.g * (1 - amount),
+      b: from.b * amount + to.b * (1 - amount),
+    });
+  }
+
+  function applyThemeVariables(config) {
+    const color = normalizeHex(config.brandColor);
+    const strong = mix(color, "#000000", 0.68);
+    const deeper = mix(color, "#000000", 0.48);
+    const soft = mix(color, "#ffffff", 0.34);
+    const vividSoft = mix(color, "#ffffff", 0.62);
+    const root = document.documentElement;
+
+    Object.entries({
+      "--yg-demo-color": color,
+      "--brand": color,
+      "--brand-strong": strong,
+      "--accent": color,
+      "--accent-deep": strong,
+      "--accent-soft": soft,
+      "--green": color,
+      "--green-2": strong,
+      "--yellow": vividSoft,
+      "--teal": color,
+      "--aqua": vividSoft,
+      "--navy": deeper,
+      "--red": color,
+      "--red-dark": strong,
+      "--olive": mix(color, "#60723f", 0.62),
+      "--warm": mix(color, "#d17f23", 0.7),
+      "--new": mix(color, "#315f8a", 0.72),
+      "--prep": mix(color, "#9b6419", 0.72),
+      "--ready": mix(color, "#16643f", 0.72),
+    }).forEach(([name, value]) => {
+      root.style.setProperty(name, value);
+    });
+  }
+
   function installBar(config) {
     replaceText(document.body, [
       ["YG Bar", config.businessName],
@@ -218,7 +283,7 @@
   }
 
   function installCommon(config) {
-    document.documentElement.style.setProperty("--yg-demo-color", config.brandColor);
+    applyThemeVariables(config);
     document.title = `${config.businessName} | ${config.product}`;
     installPersonalizedName(config);
     document.body.insertAdjacentHTML(
@@ -237,6 +302,7 @@
   }
 
   window.YG_DEMO_CONFIG = getConfig();
+  applyThemeVariables(window.YG_DEMO_CONFIG);
   window.YG_DEMO_SESSION_ID = sessionId || "preview";
   window.YG_DEMO_STORAGE_PREFIX = `yg-systems:demo-state:${window.YG_DEMO_SESSION_ID}`;
   if (window.location.pathname.includes("/eventos/")) {
