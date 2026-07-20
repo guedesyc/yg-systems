@@ -235,6 +235,15 @@ p {
   color: #fff;
 }
 
+#demoSubmitButton {
+  background: linear-gradient(135deg, var(--chosen-demo-color, var(--accent)), color-mix(in srgb, var(--chosen-demo-color, var(--accent)) 72%, #3bb9ff));
+  box-shadow: 0 14px 40px color-mix(in srgb, var(--chosen-demo-color, var(--accent)) 28%, transparent);
+  transition:
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
 .button.secondary {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--line);
@@ -916,7 +925,7 @@ footer {
 .demo-loading {
   align-items: center;
   background:
-    radial-gradient(circle at 50% 42%, rgba(22, 139, 255, 0.18), transparent 28rem),
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--accent, #168bff) 24%, transparent), transparent 28rem),
     #000;
   color: var(--text);
   display: grid;
@@ -929,7 +938,11 @@ footer {
 }
 
 .demo-loading.is-leaving .loading-card {
-  animation: loading-leave 620ms ease forwards;
+  animation: loading-leave 760ms ease forwards;
+}
+
+.demo-loading.is-leaving .loading-card img {
+  animation: loading-logo-zoom 900ms ease forwards;
 }
 
 .loading-card {
@@ -941,10 +954,10 @@ footer {
 
 .loading-card img {
   border-radius: var(--radius);
-  filter: drop-shadow(0 0 34px rgba(59, 185, 255, 0.34));
-  max-height: 240px;
-  object-fit: cover;
-  width: min(360px, 72vw);
+  filter: drop-shadow(0 0 34px color-mix(in srgb, var(--accent, #168bff) 48%, transparent));
+  max-height: 210px;
+  object-fit: contain;
+  width: min(300px, 64vw);
 }
 
 .loading-card p {
@@ -1095,6 +1108,13 @@ footer {
   to {
     opacity: 0;
     transform: scale(0.985);
+  }
+}
+
+@keyframes loading-logo-zoom {
+  to {
+    opacity: 0;
+    transform: scale(1.18);
   }
 }
 

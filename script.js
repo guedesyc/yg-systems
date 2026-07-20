@@ -7,6 +7,8 @@ const demoForm = document.querySelector("#demoForm");
 const demoModalClose = document.querySelector("#demoModalClose");
 const demoModalProduct = document.querySelector("#demoModalProduct");
 const demoLogoInput = demoForm?.querySelector('input[name="businessLogo"]');
+const demoColorInput = demoForm?.querySelector('input[name="brandColor"]');
+const demoSubmitButton = document.querySelector("#demoSubmitButton");
 const demoFormNote = document.querySelector("#demoFormNote");
 const detailLabel = document.querySelector("#ecosystem-detail-label");
 const detailTitle = document.querySelector("#ecosystem-detail-title");
@@ -142,7 +144,7 @@ function updateEcosystemDetail(tabName) {
     detailDemo.dataset.demo = tabName;
     detailDemo.disabled = Boolean(product.locked);
     detailDemo.classList.toggle("locked-button", Boolean(product.locked));
-    detailDemo.textContent = product.locked ? "Demo em breve" : "Visualizar minha demo";
+    detailDemo.textContent = product.locked ? "Demo em breve" : "Quero ver meu sistema!";
     detailDemo.setAttribute("aria-disabled", String(Boolean(product.locked)));
   }
   if (detailPreview) {
@@ -179,6 +181,7 @@ function openDemoModal(productKey) {
   if (demoProducts[selectedDemo]?.locked) return;
   if (demoModalProduct) demoModalProduct.textContent = demoProducts[selectedDemo].name;
   if (demoFormNote) demoFormNote.textContent = "";
+  updateDemoSubmitColor();
   if (demoModal) demoModal.hidden = false;
 }
 
@@ -211,9 +214,20 @@ function buildDemoUrl({ businessName, brandColor, logo }) {
   return `${demoPaths[selectedDemo] || demoPaths.restaurante}?demoSession=${encodeURIComponent(sessionId)}`;
 }
 
-function writeLoadingPage(targetWindow, url) {
+function getTransitionLogo(logo) {
+  return logo || new URL("./assets/yg-systems-logo.png", window.location.href).href;
+}
+
+function updateDemoSubmitColor() {
+  if (!demoSubmitButton || !demoColorInput) return;
+  demoSubmitButton.style.setProperty("--chosen-demo-color", demoColorInput.value || "#168bff");
+}
+
+function writeLoadingPage(targetWindow, url, transition) {
   const safeUrl = JSON.stringify(url);
-  const logoUrl = JSON.stringify(new URL("./assets/yg-systems-logo.png", window.location.href).href);
+  const logoUrl = JSON.stringify(getTransitionLogo(transition.logo));
+  const businessName = JSON.stringify(transition.businessName || "sua empresa");
+  const accent = /^#[0-9a-fA-F]{6}$/.test(transition.brandColor || "") ? transition.brandColor : "#168bff";
   targetWindow.document.open();
   targetWindow.document.write(`<!doctype html>
 <html lang="pt-BR">
@@ -223,10 +237,11 @@ function writeLoadingPage(targetWindow, url) {
   <title>YG Systems | Preparando demo</title>
   <style>
     * { box-sizing: border-box; }
+    :root { --accent: ${accent}; }
     body {
       align-items: center;
       background:
-        radial-gradient(circle at 50% 42%, rgba(22, 139, 255, 0.18), transparent 28rem),
+        radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--accent) 24%, transparent), transparent 28rem),
         #000;
       color: #f6f9ff;
       display: grid;
@@ -237,12 +252,19 @@ function writeLoadingPage(targetWindow, url) {
       padding: 24px;
       text-align: center;
     }
-    main { animation: lastFade 620ms ease 5.55s forwards; display: grid; gap: 22px; justify-items: center; max-width: 620px; }
-    img { border-radius: 8px; filter: drop-shadow(0 0 34px rgba(59,185,255,.34)); max-height: 240px; object-fit: contain; width: min(360px, 72vw); }
-    p { animation: messageFade 2s ease both; color: rgba(246,249,255,.88); font-size: clamp(1.25rem, 4vw, 2.25rem); font-weight: 300; line-height: 1.18; margin: 0; }
+    main { animation: lastFade 760ms ease 7.2s forwards; display: grid; gap: 22px; justify-items: center; max-width: 660px; }
+    img { animation: logoIntro 900ms ease both, logoZoom 900ms ease 6.55s forwards; border-radius: 8px; filter: drop-shadow(0 0 34px color-mix(in srgb, var(--accent) 48%, transparent)); max-height: 210px; object-fit: contain; width: min(300px, 64vw); }
+    p { animation: messageFade 2s ease both; color: rgba(246,249,255,.88); font-size: clamp(1.18rem, 3.5vw, 2.1rem); font-weight: 300; line-height: 1.22; margin: 0; white-space: pre-line; }
     .bar { background: rgba(255,255,255,.10); border-radius: 999px; height: 4px; overflow: hidden; width: min(320px, 62vw); }
-    .bar span { animation: load 6s linear forwards; background: linear-gradient(90deg, #168bff, #3bb9ff); display: block; height: 100%; width: 0; }
+    .bar span { animation: load 7.4s linear forwards; background: linear-gradient(90deg, var(--accent), #3bb9ff); display: block; height: 100%; width: 0; }
     @keyframes load { to { width: 100%; } }
+    @keyframes logoIntro {
+      from { opacity: 0; transform: scale(.94); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes logoZoom {
+      to { opacity: 0; transform: scale(1.18); }
+    }
     @keyframes messageFade {
       0% { opacity: 0; transform: translateY(8px); }
       18%, 78% { opacity: 1; transform: translateY(0); }
@@ -260,7 +282,12 @@ function writeLoadingPage(targetWindow, url) {
     <div class="bar"><span></span></div>
   </main>
   <script>
-    const messages = ["Aplicando identidade visual", "Personalizando sistema", "Seja bem-vindo ao YG Systems."];
+    const messages = [
+      "Aplicando identidade visual",
+      "Personalizando sistema",
+      "Você cuida do negócio,\\na YG System, da organização.",
+      "Seja bem-vindo, " + ${businessName}
+    ];
     const text = document.getElementById("loadingText");
     function setMessage(message) {
       text.style.animation = "none";
@@ -270,18 +297,30 @@ function writeLoadingPage(targetWindow, url) {
     }
     setTimeout(() => { setMessage(messages[1]); }, 2000);
     setTimeout(() => { setMessage(messages[2]); }, 4000);
-    setTimeout(() => { window.location.href = ${safeUrl}; }, 6000);
+    setTimeout(() => { setMessage(messages[3]); }, 6000);
+    setTimeout(() => { window.location.href = ${safeUrl}; }, 7600);
   <\/script>
 </body>
 </html>`);
   targetWindow.document.close();
 }
 
-function showInlineLoading(url) {
-  const messages = ["Aplicando identidade visual", "Personalizando sistema", "Seja bem-vindo ao YG Systems."];
+function showInlineLoading(url, transition) {
+  const messages = [
+    "Aplicando identidade visual",
+    "Personalizando sistema",
+    "Você cuida do negócio,\na YG System, da organização.",
+    `Seja bem-vindo, ${transition.businessName || "sua empresa"}`,
+  ];
   let index = 0;
   if (demoLoadingText) demoLoadingText.textContent = messages[index];
-  if (demoLoading) demoLoading.hidden = false;
+  if (demoLoading) {
+    const image = demoLoading.querySelector("img");
+    if (image) image.src = getTransitionLogo(transition.logo);
+    demoLoading.style.setProperty("--accent", transition.brandColor || "#168bff");
+    demoLoading.classList.remove("is-leaving");
+    demoLoading.hidden = false;
+  }
   const timer = setInterval(() => {
     index += 1;
     if (demoLoadingText && messages[index]) {
@@ -295,7 +334,7 @@ function showInlineLoading(url) {
   setTimeout(() => {
     if (demoLoading) demoLoading.classList.add("is-leaving");
     window.location.assign(url);
-  }, 6000);
+  }, 7600);
 }
 
 async function shrinkLogo(file) {
@@ -359,23 +398,30 @@ demoLogoInput?.addEventListener("change", async (event) => {
   }
 });
 
+demoColorInput?.addEventListener("input", updateDemoSubmitColor);
+
 demoForm?.addEventListener("submit", (event) => {
   event.preventDefault();
   const data = new FormData(demoForm);
-  const url = buildDemoUrl({
+  const transition = {
     businessName: String(data.get("businessName") || "Empresa Demonstração"),
     brandColor: String(data.get("brandColor") || "#168bff"),
     logo: logoDataUrl,
+  };
+  const url = buildDemoUrl({
+    businessName: transition.businessName,
+    brandColor: transition.brandColor,
+    logo: transition.logo,
   });
   if (!url) return;
   const absoluteUrl = new URL(url, window.location.href).href;
   const targetWindow = window.open("", "_blank");
   closeDemoModal();
   if (targetWindow) {
-    writeLoadingPage(targetWindow, absoluteUrl);
+    writeLoadingPage(targetWindow, absoluteUrl, transition);
     return;
   }
-  showInlineLoading(absoluteUrl);
+  showInlineLoading(absoluteUrl, transition);
 });
 
 form?.addEventListener("submit", (event) => {
