@@ -194,7 +194,8 @@
   function installInternalLogo(config) {
     if (!config.logo) return;
 
-    document.querySelectorAll("#brandLogo, .hero-logo, .qr, .brand-block img").forEach((image) => {
+    document.querySelectorAll("#brandLogo, .hero-logo, .qr, .brand-block img, .brand img, [class*='brand'] img, [class*='logo']").forEach((image) => {
+      if (!(image instanceof HTMLImageElement)) return;
       applyLogoToImage(image, config);
     });
 

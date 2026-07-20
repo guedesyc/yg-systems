@@ -27,8 +27,9 @@
   function applyLogo(root) {
     const logo = root.querySelector(".brand-block img");
     if (!logo) return;
-    logo.src = config.logo || "./yg-systems-monogram.png";
+    logo.src = config.logo || "./yg-systems-logo.png";
     logo.alt = `Logo de ${config.businessName}`;
+    logo.classList.add("yg-demo-inner-logo");
   }
 
   function applyBrand() {

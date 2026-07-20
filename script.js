@@ -131,6 +131,7 @@ const demoProducts = {
 
 let selectedDemo = "restaurante";
 let logoDataUrl = "";
+let logoProcessingPromise = Promise.resolve("");
 
 document.body.classList.add("site-ready");
 
@@ -359,7 +360,7 @@ async function shrinkLogo(file) {
     preview.onerror = reject;
     preview.src = source;
   });
-  const scale = Math.min(1, 420 / Math.max(image.width, image.height));
+  const scale = Math.min(1, 240 / Math.max(image.width, image.height));
   const canvas = document.createElement("canvas");
   canvas.width = Math.max(1, Math.round(image.width * scale));
   canvas.height = Math.max(1, Math.round(image.height * scale));
@@ -390,18 +391,30 @@ demoLogoInput?.addEventListener("change", async (event) => {
   const file = event.target.files?.[0];
   logoDataUrl = "";
   if (!file) return;
+  if (demoFormNote) demoFormNote.textContent = "Preparando logo...";
+  if (demoSubmitButton) demoSubmitButton.disabled = true;
+  logoProcessingPromise = shrinkLogo(file);
   try {
-    logoDataUrl = await shrinkLogo(file);
+    logoDataUrl = await logoProcessingPromise;
     if (demoFormNote) demoFormNote.textContent = "Logo pronta para a demonstração.";
   } catch {
+    logoDataUrl = "";
     if (demoFormNote) demoFormNote.textContent = "Não foi possível usar esta imagem. Tente uma logo menor.";
+  } finally {
+    if (demoSubmitButton) demoSubmitButton.disabled = false;
   }
 });
 
 demoColorInput?.addEventListener("input", updateDemoSubmitColor);
 
-demoForm?.addEventListener("submit", (event) => {
+demoForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (demoSubmitButton) demoSubmitButton.disabled = true;
+  try {
+    await logoProcessingPromise;
+  } catch {
+    logoDataUrl = "";
+  }
   const data = new FormData(demoForm);
   const transition = {
     businessName: String(data.get("businessName") || "Empresa Demonstração"),
@@ -413,7 +426,10 @@ demoForm?.addEventListener("submit", (event) => {
     brandColor: transition.brandColor,
     logo: transition.logo,
   });
-  if (!url) return;
+  if (!url) {
+    if (demoSubmitButton) demoSubmitButton.disabled = false;
+    return;
+  }
   const absoluteUrl = new URL(url, window.location.href).href;
   const targetWindow = window.open("", "_blank");
   closeDemoModal();
