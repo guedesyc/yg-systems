@@ -213,7 +213,7 @@ function buildDemoUrl({ businessName, brandColor, logo }) {
 
 function writeLoadingPage(targetWindow, url) {
   const safeUrl = JSON.stringify(url);
-  const logoUrl = JSON.stringify(new URL("./assets/yg-systems-monogram.png", window.location.href).href);
+  const logoUrl = JSON.stringify(new URL("./assets/yg-systems-logo.png", window.location.href).href);
   targetWindow.document.open();
   targetWindow.document.write(`<!doctype html>
 <html lang="pt-BR">
@@ -225,7 +225,9 @@ function writeLoadingPage(targetWindow, url) {
     * { box-sizing: border-box; }
     body {
       align-items: center;
-      background: #000;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(22, 139, 255, 0.18), transparent 28rem),
+        #000;
       color: #f6f9ff;
       display: grid;
       font-family: Inter, ui-sans-serif, system-ui, "Segoe UI", Arial, sans-serif;
@@ -235,12 +237,20 @@ function writeLoadingPage(targetWindow, url) {
       padding: 24px;
       text-align: center;
     }
-    main { display: grid; gap: 18px; justify-items: center; max-width: 520px; }
-    img { border: 1px solid rgba(59,185,255,.34); border-radius: 8px; height: 86px; object-fit: cover; width: 86px; }
-    p { font-size: clamp(1.5rem, 5vw, 3rem); font-weight: 900; line-height: 1.05; margin: 0; }
-    .bar { background: rgba(255,255,255,.12); border-radius: 999px; height: 8px; overflow: hidden; width: min(360px, 70vw); }
+    main { animation: lastFade 620ms ease 5.55s forwards; display: grid; gap: 22px; justify-items: center; max-width: 620px; }
+    img { border-radius: 8px; filter: drop-shadow(0 0 34px rgba(59,185,255,.34)); max-height: 240px; object-fit: contain; width: min(360px, 72vw); }
+    p { animation: messageFade 2s ease both; color: rgba(246,249,255,.88); font-size: clamp(1.25rem, 4vw, 2.25rem); font-weight: 300; line-height: 1.18; margin: 0; }
+    .bar { background: rgba(255,255,255,.10); border-radius: 999px; height: 4px; overflow: hidden; width: min(320px, 62vw); }
     .bar span { animation: load 6s linear forwards; background: linear-gradient(90deg, #168bff, #3bb9ff); display: block; height: 100%; width: 0; }
     @keyframes load { to { width: 100%; } }
+    @keyframes messageFade {
+      0% { opacity: 0; transform: translateY(8px); }
+      18%, 78% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-6px); }
+    }
+    @keyframes lastFade {
+      to { opacity: 0; transform: scale(.985); }
+    }
   </style>
 </head>
 <body>
@@ -252,8 +262,14 @@ function writeLoadingPage(targetWindow, url) {
   <script>
     const messages = ["Aplicando identidade visual", "Personalizando sistema", "Seja bem-vindo ao YG Systems."];
     const text = document.getElementById("loadingText");
-    setTimeout(() => { text.textContent = messages[1]; }, 2000);
-    setTimeout(() => { text.textContent = messages[2]; }, 4000);
+    function setMessage(message) {
+      text.style.animation = "none";
+      void text.offsetWidth;
+      text.textContent = message;
+      text.style.animation = "messageFade 2s ease both";
+    }
+    setTimeout(() => { setMessage(messages[1]); }, 2000);
+    setTimeout(() => { setMessage(messages[2]); }, 4000);
     setTimeout(() => { window.location.href = ${safeUrl}; }, 6000);
   <\/script>
 </body>
@@ -268,10 +284,16 @@ function showInlineLoading(url) {
   if (demoLoading) demoLoading.hidden = false;
   const timer = setInterval(() => {
     index += 1;
-    if (demoLoadingText && messages[index]) demoLoadingText.textContent = messages[index];
+    if (demoLoadingText && messages[index]) {
+      demoLoadingText.classList.remove("is-fading");
+      void demoLoadingText.offsetWidth;
+      demoLoadingText.textContent = messages[index];
+      demoLoadingText.classList.add("is-fading");
+    }
     if (index >= messages.length - 1) clearInterval(timer);
   }, 2000);
   setTimeout(() => {
+    if (demoLoading) demoLoading.classList.add("is-leaving");
     window.location.assign(url);
   }, 6000);
 }
