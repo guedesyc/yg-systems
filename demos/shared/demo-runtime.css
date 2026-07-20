@@ -68,6 +68,10 @@
   width: 42px;
 }
 
+.brand-mark.yg-demo-logo-text {
+  display: none;
+}
+
 .yg-demo-brand-wrap {
   align-items: center;
   display: flex;

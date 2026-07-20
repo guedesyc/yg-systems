@@ -131,16 +131,21 @@
     );
   }
 
+  function defaultLogoPath() {
+    return "../../assets/yg-systems-logo.png";
+  }
+
+  function effectiveLogo(config) {
+    return config.logo || defaultLogoPath();
+  }
+
   function logoHtml(config) {
-    if (config.logo) {
-      return `<img class="yg-demo-logo-img" src="${config.logo}" alt="Logo de ${config.businessName}">`;
-    }
-    return `<span class="yg-demo-logo-text">${initials(config.businessName)}</span>`;
+    return `<img class="yg-demo-logo-img" src="${effectiveLogo(config)}" alt="Logo de ${config.businessName}">`;
   }
 
   function applyLogoToImage(image, config) {
-    if (!image || !config.logo) return;
-    image.src = config.logo;
+    if (!image) return;
+    image.src = effectiveLogo(config);
     image.alt = `Logo de ${config.businessName}`;
     image.classList.add("yg-demo-inner-logo");
   }
@@ -192,8 +197,6 @@
   }
 
   function installInternalLogo(config) {
-    if (!config.logo) return;
-
     document.querySelectorAll("#brandLogo, .hero-logo, .qr, .brand-block img, .brand img, [class*='brand'] img, [class*='logo']").forEach((image) => {
       if (!(image instanceof HTMLImageElement)) return;
       applyLogoToImage(image, config);
