@@ -27,46 +27,100 @@ const demoPaths = {
 
 const demoProducts = {
   restaurante: {
-    name: "YG Restaurante",
-    title: "Mais clareza para vender, atender e acompanhar cada pedido.",
-    copy: "Seu cliente visualiza o cardápio, monta o pedido e informa como quer receber. A equipe ganha uma visão organizada para evitar mensagens perdidas e dúvidas no atendimento.",
-    benefits: ["Mais agilidade para quem atende pelo WhatsApp.", "Menos erros em sabores, endereço e pagamento.", "Uma apresentação profissional para o seu negócio."],
-    preview: [["Cardápio", "Pedido organizado", "Sabores, entrega e pagamento em um só fluxo."], ["Atendimento", "Menos dúvidas", "Informações completas antes de confirmar."], ["Painel", "Visão do dia", "Pedidos prontos para acompanhar."]],
+    name: "YG Pedidos",
+    title: "Do pedido perdido no papel ao atendimento organizado.",
+    copy:
+      "Você para de depender de mensagens soltas, caderno no balcão e conferência manual. O cliente escolhe, informa os dados e sua equipe recebe um pedido mais claro para preparar e acompanhar.",
+    benefits: [
+      "Menos erro em sabor, endereço, entrega e pagamento.",
+      "Mais velocidade para atender sem repetir a mesma pergunta várias vezes.",
+      "Uma apresentação mais profissional para quem compra de você.",
+    ],
+    preview: [
+      ["Antes", "Pedido em papel", "Informações incompletas geram dúvidas e atraso."],
+      ["Depois", "Pedido organizado", "Cliente, sabores, entrega e pagamento em um só fluxo."],
+      ["Resultado", "Equipe mais segura", "Menos retrabalho e mais clareza no atendimento."],
+    ],
   },
   bar: {
-    name: "YG Bar",
-    title: "Comandas mais claras para sua equipe atender sem perder o ritmo.",
-    copy: "Cada mesa fica organizada desde o primeiro pedido até o fechamento. Assim, o seu time ganha rapidez no salão e você consegue enxergar o que acontece no turno.",
-    benefits: ["Evita esquecimentos entre garçom, cozinha e balcão.", "Facilita o fechamento da mesa e reduz divergências.", "Ajuda você a entender os itens que mais movimentam o bar."],
-    preview: [["Salão", "Mesa 08", "Comanda aberta e pronta para receber novos itens."], ["Equipe", "Pedido enviado", "Cozinha e bar visualizam o que precisam preparar."], ["Gestão", "Fechamento simples", "O resumo do turno fica mais claro para o dono."]],
+    name: "YG Atendimentos",
+    title: "Da comanda improvisada ao atendimento que acompanha cada mesa.",
+    copy:
+      "Cada mesa fica organizada desde o primeiro pedido até o fechamento. O garçom não depende da memória, a cozinha recebe a informação com mais clareza e você enxerga o consumo do turno.",
+    benefits: [
+      "Evita esquecimentos entre garçom, cozinha e balcão.",
+      "Facilita o fechamento da mesa e reduz divergências.",
+      "Ajuda você a entender os itens que mais movimentam o atendimento.",
+    ],
+    preview: [
+      ["Salão", "Mesa 08", "Comanda aberta e pronta para receber novos itens."],
+      ["Equipe", "Pedido enviado", "Cozinha e bar visualizam o que precisam preparar."],
+      ["Gestão", "Fechamento simples", "O resumo do turno fica mais claro para o dono."],
+    ],
   },
   estoque: {
-    name: "YG Estoque e Controle",
+    name: "Estoque e Controle",
     title: "Saiba o que entra, o que sai e o que precisa ser reposto antes de faltar.",
-    copy: "O estoque deixa de depender da memória ou de anotações espalhadas. Você acompanha insumos, vendas e custos em uma mesma rotina, com mais segurança para comprar e produzir.",
-    benefits: ["Reduz desperdícios e compras feitas no susto.", "Mostra o que está perto de acabar.", "Dá mais confiança para calcular custos e resultados."],
-    preview: [["Estoque", "6 itens em atenção", "Você enxerga o que precisa de reposição."], ["Produção", "Receitas cadastradas", "Os custos ficam mais próximos da realidade."], ["Resultado", "Movimentação do dia", "Entradas e saídas organizadas para consulta."]],
+    copy:
+      "O estoque deixa de depender da memória ou de anotações espalhadas. Você acompanha insumos, vendas e custos em uma mesma rotina, com mais segurança para comprar e produzir.",
+    benefits: [
+      "Reduz desperdícios e compras feitas no susto.",
+      "Mostra o que está perto de acabar.",
+      "Dá mais confiança para calcular custos e resultados.",
+    ],
+    preview: [
+      ["Estoque", "6 itens em atenção", "Você enxerga o que precisa de reposição."],
+      ["Produção", "Receitas cadastradas", "Os custos ficam mais próximos da realidade."],
+      ["Resultado", "Movimentação do dia", "Entradas e saídas organizadas para consulta."],
+    ],
   },
   financeiro: {
-    name: "YG Financeiro",
+    name: "Financeiro",
     title: "Transforme entradas e saídas em decisões mais tranquilas para o seu negócio.",
-    copy: "Você passa a acompanhar o dinheiro que entra, o que precisa ser pago e o resultado do período sem juntar papéis e mensagens no fim do mês.",
-    benefits: ["Mais clareza para planejar pagamentos.", "Menos surpresa ao fechar o mês.", "Uma visão direta do que está dando resultado."],
-    preview: [["Entradas", "Vendas do período", "Receitas reunidas em uma visão simples."], ["Despesas", "Contas em dia", "Você acompanha o que vence e o que já foi pago."], ["Resultado", "Saldo mais claro", "Informação para decidir com mais segurança."]],
+    copy:
+      "Você passa a acompanhar o dinheiro que entra, o que precisa ser pago e o resultado do período sem juntar papéis e mensagens no fim do mês.",
+    benefits: [
+      "Mais clareza para planejar pagamentos.",
+      "Menos surpresa ao fechar o mês.",
+      "Uma visão direta do que está dando resultado.",
+    ],
+    preview: [
+      ["Entradas", "Vendas do período", "Receitas reunidas em uma visão simples."],
+      ["Despesas", "Contas em dia", "Você acompanha o que vence e o que já foi pago."],
+      ["Resultado", "Saldo mais claro", "Informação para decidir com mais segurança."],
+    ],
   },
   feedbacks: {
-    name: "YG Feedbacks",
+    name: "Feedbacks",
     title: "Escute seus clientes de um jeito simples e transforme opinião em melhoria.",
-    copy: "Em vez de depender apenas de comentários soltos, você reúne notas e sugestões para entender o que encanta, o que incomoda e onde vale agir primeiro.",
-    benefits: ["Mostra os pontos fortes que merecem continuar.", "Revela falhas antes que elas afastem clientes.", "Ajuda a equipe a melhorar com base em opiniões reais."],
-    preview: [["Clientes", "Avaliação rápida", "Uma forma leve de pedir opinião após o atendimento."], ["Leitura", "Nota média", "Você enxerga a percepção do público de imediato."], ["Melhoria", "Pontos recorrentes", "Sugestões que ajudam a priorizar mudanças."]],
+    copy:
+      "Em vez de depender apenas de comentários soltos, você reúne notas e sugestões para entender o que encanta, o que incomoda e onde vale agir primeiro.",
+    benefits: [
+      "Mostra os pontos fortes que merecem continuar.",
+      "Revela falhas antes que elas afastem clientes.",
+      "Ajuda a equipe a melhorar com base em opiniões reais.",
+    ],
+    preview: [
+      ["Clientes", "Avaliação rápida", "Uma forma leve de pedir opinião após o atendimento."],
+      ["Leitura", "Nota média", "Você enxerga a percepção do público de imediato."],
+      ["Melhoria", "Pontos recorrentes", "Sugestões que ajudam a priorizar mudanças."],
+    ],
   },
   eventos: {
-    name: "YG Eventos",
+    name: "Eventos",
     title: "Organize inscrições e confirmações para que seu evento comece antes da porta abrir.",
-    copy: "A pessoa se inscreve, você acompanha as confirmações e enxerga a lotação sem depender de listas espalhadas. Isso deixa a comunicação mais profissional e o dia do evento mais leve.",
-    benefits: ["Facilita saber quem confirmou presença.", "Evita ultrapassar a capacidade do evento.", "Deixa os participantes mais bem informados."],
-    preview: [["Inscrições", "42 confirmados", "Participantes reunidos em uma lista organizada."], ["Lotação", "8 vagas livres", "Você acompanha a capacidade sem fazer contas manuais."], ["Comunicação", "Evento atualizado", "Informações prontas para orientar cada participante."]],
+    copy:
+      "Você acompanha as inscrições, confirmações e vagas livres sem depender de listas espalhadas. Isso deixa a comunicação mais profissional e o dia do evento mais leve.",
+    benefits: [
+      "Facilita saber quem confirmou presença.",
+      "Evita ultrapassar a capacidade do evento.",
+      "Deixa os participantes mais bem informados.",
+    ],
+    preview: [
+      ["Inscrições", "42 confirmados", "Participantes reunidos em uma lista organizada."],
+      ["Lotação", "8 vagas livres", "Você acompanha a capacidade sem fazer contas manuais."],
+      ["Comunicação", "Evento atualizado", "Informações prontas para orientar cada participante."],
+    ],
   },
 };
 
@@ -83,8 +137,12 @@ function updateEcosystemDetail(tabName) {
   if (detailBenefits) detailBenefits.innerHTML = product.benefits.map((benefit) => `<li>${benefit}</li>`).join("");
   if (detailDemo) detailDemo.dataset.demo = tabName;
   if (detailPreview) {
-    detailPreview.innerHTML = product.preview.map(([label, title, copy], index) =>
-      `<div class="demo-panel ${index === 0 ? "menu" : index === 1 ? "order" : "admin"}"><span>${label}</span><strong>${title}</strong><small>${copy}</small></div>`).join("");
+    detailPreview.innerHTML = product.preview
+      .map(
+        ([label, title, copy], index) =>
+          `<div class="demo-panel ${index === 0 ? "menu" : index === 1 ? "order" : "admin"}"><span>${label}</span><strong>${title}</strong><small>${copy}</small></div>`,
+      )
+      .join("");
   }
   if (detailSection) {
     detailSection.classList.remove("is-switching");
@@ -120,7 +178,14 @@ function closeDemoModal() {
 
 function renderDemo({ businessName, brandColor, logo }) {
   const sessionId = crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  const payload = { businessName, brandColor, logo, product: demoProducts[selectedDemo].name, model: selectedDemo, createdAt: new Date().toISOString() };
+  const payload = {
+    businessName,
+    brandColor,
+    logo,
+    product: demoProducts[selectedDemo].name,
+    model: selectedDemo,
+    createdAt: new Date().toISOString(),
+  };
   try {
     localStorage.setItem(`yg-systems:demo:${sessionId}`, JSON.stringify(payload));
   } catch {
@@ -201,15 +266,32 @@ demoLogoInput?.addEventListener("change", async (event) => {
 demoForm?.addEventListener("submit", (event) => {
   event.preventDefault();
   const data = new FormData(demoForm);
-  if (renderDemo({ businessName: String(data.get("businessName") || "Empresa Demonstracao"), brandColor: String(data.get("brandColor") || "#168bff"), logo: logoDataUrl })) closeDemoModal();
+  if (
+    renderDemo({
+      businessName: String(data.get("businessName") || "Empresa Demonstração"),
+      brandColor: String(data.get("brandColor") || "#168bff"),
+      logo: logoDataUrl,
+    })
+  ) {
+    closeDemoModal();
+  }
 });
 
 form?.addEventListener("submit", (event) => {
   event.preventDefault();
   const data = new FormData(form);
-  const payload = { name: data.get("name"), phone: data.get("phone"), email: data.get("email"), message: data.get("message") };
-  try { localStorage.setItem("yg-systems:last-lead-preview", JSON.stringify(payload)); } catch { /* WhatsApp remains available. */ }
-  const text = `Olá, YG Systems!\n\nNome: ${payload.name}\nWhatsApp: ${payload.phone}\nE-mail: ${payload.email || "não informado"}\nO que quero organizar: ${payload.message}`;
+  const payload = {
+    name: data.get("name"),
+    phone: data.get("phone"),
+    email: data.get("email"),
+    message: data.get("message"),
+  };
+  try {
+    localStorage.setItem("yg-systems:last-lead-preview", JSON.stringify(payload));
+  } catch {
+    // WhatsApp remains available even if storage is full.
+  }
+  const text = `Olá, YG Systems!\n\nNome: ${payload.name}\nWhatsApp: ${payload.phone}\nE-mail: ${payload.email || "não informado"}\nMaior problema da empresa hoje: ${payload.message}`;
   window.open(`https://wa.me/5571999583586?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
   if (note) {
     note.textContent = "Abrimos uma conversa no WhatsApp para você enviar sua mensagem.";
