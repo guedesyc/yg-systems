@@ -21,12 +21,12 @@ const demoLoading = document.querySelector("#demoLoading");
 const demoLoadingText = document.querySelector("#demoLoadingText");
 
 const demoPaths = {
-  restaurante: "demos/restaurante/index.html",
-  bar: "demos/bar/index.html",
-  estoque: "demos/estoque/index.html",
-  financeiro: "demos/financeiro/index.html",
-  feedbacks: "demos/feedbacks/index.html",
-  eventos: "demos/eventos/index.html",
+  restaurante: "demos/restaurante/",
+  bar: "demos/bar/",
+  estoque: "demos/estoque/",
+  financeiro: "demos/financeiro/",
+  feedbacks: "demos/feedbacks/",
+  eventos: "demos/eventos/",
 };
 
 const demoProducts = {
@@ -135,6 +135,12 @@ let logoProcessingPromise = Promise.resolve("");
 
 document.body.classList.add("site-ready");
 
+function demoPathFor(productKey) {
+  const cleanPath = demoPaths[productKey] || demoPaths.restaurante;
+  if (window.location.protocol === "file:") return `${cleanPath}index.html`;
+  return cleanPath;
+}
+
 function updateEcosystemDetail(tabName) {
   const product = demoProducts[tabName] || demoProducts.restaurante;
   if (detailLabel) detailLabel.textContent = product.name;
@@ -212,7 +218,7 @@ function buildDemoUrl({ businessName, brandColor, logo }) {
       return "";
     }
   }
-  return `${demoPaths[selectedDemo] || demoPaths.restaurante}?demoSession=${encodeURIComponent(sessionId)}`;
+  return `${demoPathFor(selectedDemo)}?demoSession=${encodeURIComponent(sessionId)}`;
 }
 
 function getTransitionLogo(logo) {

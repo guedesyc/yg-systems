@@ -22,6 +22,32 @@ em HTML, CSS e JavaScript estatico para funcionarem bem no GitHub Pages e em tes
 3. No GitHub, abra `Settings > Pages`.
 4. Escolha publicar a partir da branch principal e pasta raiz.
 
+## Publicar na Hostinger
+
+Este projeto e um site estatico. Se a Hostinger avisar que o repositorio nao possui
+`package.json`, escolha a opcao **Implante como estatico**.
+
+Configuracao recomendada:
+
+- Dominio principal: `ygsystems.com.br`
+- Branch: `main`
+- Pasta de publicacao: raiz do repositorio
+- Arquivo inicial: `index.html`
+- Build command: vazio / nenhum
+- Output directory: vazio, raiz ou `./`, conforme o painel solicitar
+
+As demos devem ficar publicadas nas subpastas:
+
+- `https://ygsystems.com.br/demos/restaurante/`
+- `https://ygsystems.com.br/demos/bar/`
+- `https://ygsystems.com.br/demos/estoque/`
+- `https://ygsystems.com.br/demos/eventos/`
+- `https://ygsystems.com.br/demos/feedbacks/`
+
+O portal principal continua em `https://ygsystems.com.br/`. Quando o visitante clicar em uma demo,
+o site cria uma sessao temporaria no navegador e abre a subpasta correspondente ja personalizada
+com nome, cor e logo informados.
+
 ## Estrutura
 
 ```text
@@ -60,7 +86,7 @@ uma demo personalizada em uma nova pagina do proprio site.
 1. O visitante escolhe um ecossistema.
 2. O site abre uma tela para informar nome da empresa, logo opcional e cor principal.
 3. A configuracao fica salva temporariamente no navegador em `localStorage`, sempre com uma sessao unica.
-4. O site abre uma nova pagina em `demos/{modelo}/index.html`.
+4. O site abre uma nova pagina em `demos/{modelo}/` no dominio publicado.
 5. A demo carrega a configuracao e aplica nome, logo e cor por cima da base funcional daquele modelo.
 6. Cada pagina de demo usa chaves proprias por sessao, para nao misturar testes de clientes diferentes nem alterar o portal principal.
 
