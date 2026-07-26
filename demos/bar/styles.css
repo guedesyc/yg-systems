@@ -9,9 +9,10 @@
   --accent: #c2452d;
   --gold: #d89b2b;
   --ready: #16643f;
+  --delivered: #16643f;
   --prep: #9b6419;
   --new: #315f8a;
-  --registered: #5e6670;
+  --registered: #d89b2b;
   --shadow: 0 16px 42px rgba(31, 37, 40, 0.1);
 }
 
@@ -388,6 +389,9 @@ textarea:focus {
 }
 
 .table-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   min-height: 74px;
   padding: 8px;
   border: 1px solid var(--line);
@@ -395,11 +399,13 @@ textarea:focus {
   background: #fff;
   color: var(--ink);
   font-weight: 850;
+  min-width: 0;
 }
 
 .table-button strong {
   display: block;
   font-size: 15px;
+  line-height: 1.1;
 }
 
 .table-button span {
@@ -408,6 +414,8 @@ textarea:focus {
   color: var(--muted);
   font-size: 12px;
   font-weight: 700;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
 }
 
 .table-button em {
@@ -421,6 +429,7 @@ textarea:focus {
   font-style: normal;
   font-weight: 900;
   text-transform: uppercase;
+  line-height: 1.12;
 }
 
 .table-button.active {
@@ -499,6 +508,35 @@ textarea:focus {
   border: 1px solid rgba(15, 107, 95, 0.18);
   border-radius: 8px;
   font-weight: 800;
+}
+
+.order-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.order-panel .order-title {
+  order: 1;
+}
+
+.order-panel .session-meta {
+  order: 2;
+}
+
+.order-panel .waiter-layout {
+  order: 3;
+}
+
+.order-panel .history {
+  order: 4;
+}
+
+.order-panel.has-session .history {
+  order: 3;
+}
+
+.order-panel.has-session .waiter-layout {
+  order: 4;
 }
 
 .session-meta strong,
@@ -935,6 +973,7 @@ textarea:focus {
 
 .status.registrado {
   background: var(--registered);
+  color: #312007;
 }
 
 .status.preparando {
@@ -946,7 +985,7 @@ textarea:focus {
 }
 
 .status.entregue {
-  background: #6c7370;
+  background: var(--delivered);
 }
 
 .kitchen-line.pronto {
@@ -992,6 +1031,12 @@ textarea:focus {
   color: #fff;
   background: var(--brand);
   border-color: var(--brand);
+}
+
+.status-button.undo {
+  color: #7a4b10;
+  background: #fff8eb;
+  border-color: rgba(155, 100, 25, 0.35);
 }
 
 .qr-grid {
@@ -1175,6 +1220,24 @@ textarea:focus {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .waiter-status-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .table-button {
+    min-height: 88px;
+    padding: 8px 6px;
+  }
+
+  .table-button strong {
+    font-size: 14px;
+  }
+
+  .table-button em {
+    font-size: 10px;
+    padding: 4px;
+  }
+
   .menu-grid,
   .waiter-menu {
     grid-template-columns: 1fr;
@@ -1255,7 +1318,15 @@ textarea:focus {
   }
 
   .table-button {
-    min-height: 64px;
+    min-height: 92px;
+  }
+
+  .table-button span {
+    font-size: 11px;
+  }
+
+  .waiter-status-grid {
+    grid-template-columns: 1fr;
   }
 
   .menu-card {
@@ -1285,6 +1356,19 @@ textarea:focus {
   .item-list li {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .item-main {
+    grid-template-columns: 1fr;
+  }
+
+  .line-number {
+    width: max-content;
+  }
+
+  .status-actions {
+    display: grid;
+    grid-template-columns: 1fr;
   }
 
   .item-list strong {

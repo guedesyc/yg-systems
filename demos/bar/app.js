@@ -413,6 +413,7 @@ function renderWaiter() {
   const session = activeSession();
   const subtotal = tableSubtotal();
   const counts = activeTableKitchenCounts();
+  document.querySelector(".order-panel")?.classList.toggle("has-session", Boolean(session?.orders?.length));
   const kitchenSummary = counts.total ? `
     <div class="waiter-status-grid">
       <span><b>${counts.solicitado}</b> na fila</span>
@@ -530,6 +531,9 @@ function orderCard(order, kitchenMode, session = null) {
 }
 
 function kitchenItemCard(item) {
+  const readyUndo = item.status === "pronto"
+    ? `<button class="status-button undo" data-item-status="${item.lineId}:preparando" type="button">Retirar de pronto</button>`
+    : "";
   return `
     <article class="order-card kitchen-line ${item.status}">
       <header>
@@ -543,6 +547,7 @@ function kitchenItemCard(item) {
       <div class="status-actions">
         ${item.status === "solicitado" ? `<button class="status-button next" data-item-status="${item.lineId}:preparando" type="button">Em preparo</button>` : ""}
         ${item.status === "solicitado" || item.status === "preparando" ? `<button class="status-button ${item.status === "preparando" ? "next" : ""}" data-item-status="${item.lineId}:pronto" type="button">Pronto</button>` : ""}
+        ${readyUndo}
       </div>
     </article>
   `;
