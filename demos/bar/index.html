@@ -20,7 +20,7 @@
       <nav class="tabs" aria-label="Areas do sistema">
         <button class="tab active" data-view="menu" data-role="publico adm">Card&aacute;pio</button>
         <button class="tab" data-view="waiter" data-role="garcom adm">Gar&ccedil;om</button>
-        <button class="tab" data-view="kitchen" data-role="garcom adm">Cozinha</button>
+        <button class="tab" data-view="kitchen" data-role="cozinha adm">Cozinha</button>
         <button class="tab" data-view="sessions" data-role="adm">Hist&oacute;rico</button>
         <button class="tab" data-view="qr" data-role="adm">QR Mesas</button>
       </nav>
@@ -121,10 +121,16 @@
             <div class="history">
               <div class="section-head compact">
                 <div>
-                  <h3>Pedidos da mesa</h3>
-                  <p>Hist&oacute;rico da ocupa&ccedil;&atilde;o aberta at&eacute; o fechamento.</p>
+                  <h3>Comanda da mesa</h3>
+                  <p>Itens consumidos, registrados e acompanhados pela cozinha.</p>
                 </div>
-                <button id="close-table" class="ghost-button" type="button">Fechar mesa</button>
+                <div class="close-tools">
+                  <label class="field split-field">
+                    <span>Pessoas</span>
+                    <input id="payment-split" class="input" type="number" min="1" max="99" value="1" />
+                  </label>
+                  <button id="close-table" class="ghost-button" type="button">Fechar mesa</button>
+                </div>
               </div>
               <div id="table-history" class="history-list"></div>
             </div>
@@ -136,13 +142,13 @@
         <div class="section-head">
           <div>
             <p class="eyebrow">Preparo</p>
-            <h2>Cozinha e bar</h2>
-            <p>Pedidos enviados pelo gar&ccedil;om, organizados por mesa e status.</p>
+            <h2>Cozinha</h2>
+            <p>Itens enviados pelo gar&ccedil;om, em ordem de solicita&ccedil;&atilde;o e por status.</p>
           </div>
           <div class="segmented" role="group" aria-label="Filtro de preparo">
             <button class="segment active" data-station="all">Todos</button>
             <button class="segment" data-station="cozinha">Cozinha</button>
-            <button class="segment" data-station="bar">Bar</button>
+            <button class="segment" data-station="ready">Prontos</button>
           </div>
         </div>
         <div id="kitchen-board" class="kitchen-board"></div>

@@ -63,17 +63,20 @@ const menuItems = [
 const tableCount = 16;
 const categories = [...new Set(menuItems.map((item) => item.category))];
 const demoStoragePrefix = window.YG_DEMO_STORAGE_PREFIX || "yg-systems:demo-state:bar-preview";
-const stateKey = `${demoStoragePrefix}:bar:state-v2`;
-const legacyStateKey = `${demoStoragePrefix}:bar:state-v1`;
+const stateKey = `${demoStoragePrefix}:bar:state-v3`;
+const legacyStateKey = `${demoStoragePrefix}:bar:state-v2`;
+const legacyStateKeyV1 = `${demoStoragePrefix}:bar:state-v1`;
 const roleKey = `${demoStoragePrefix}:bar:role`;
 const rolePermissions = {
   publico: ["menu"],
-  garcom: ["waiter", "kitchen"],
+  garcom: ["waiter"],
+  cozinha: ["kitchen"],
   adm: ["menu", "waiter", "kitchen", "sessions", "qr"]
 };
 const roleLabels = {
   publico: "Publico",
   garcom: "Garcom",
+  cozinha: "Cozinha",
   adm: "Adm"
 };
 const users = {
@@ -81,6 +84,11 @@ const users = {
     role: "garcom",
     name: "Garcom",
     passwordHash: "c90dc61cae171669019bbabecad9c1c06aebb586cc1fb0b1a60efaa1594244dd"
+  },
+  cozinha: {
+    role: "cozinha",
+    name: "Cozinha",
+    passwordHash: "50263d56d9e862db1767204ed2fc5c264cfe2abfbd39b0bb3a7bd25ee78dbbe9"
   },
   admin: {
     role: "adm",
@@ -101,12 +109,14 @@ const ui = {
 let state = loadState();
 
 function loadState() {
-  const fallback = { tables: {}, lastOrderNumber: 1000 };
+  const fallback = { tables: {}, lastOrderNumber: 1000, lastItemSequence: 0 };
   try {
     const stored = JSON.parse(localStorage.getItem(stateKey));
     if (stored) return migrateState(stored);
     const legacy = JSON.parse(localStorage.getItem(legacyStateKey));
     if (legacy) return migrateState(legacy);
+    const legacyV1 = JSON.parse(localStorage.getItem(legacyStateKeyV1));
+    if (legacyV1) return migrateState(legacyV1);
     return fallback;
   } catch {
     return fallback;
@@ -114,10 +124,11 @@ function loadState() {
 }
 
 function migrateState(value) {
-  const migrated = { tables: {}, lastOrderNumber: value.lastOrderNumber || 1000 };
+  const migrated = { tables: {}, lastOrderNumber: value.lastOrderNumber || 1000, lastItemSequence: value.lastItemSequence || 0 };
   Object.entries(value.tables || {}).forEach(([table, data]) => {
     if (Array.isArray(data.sessions)) {
       migrated.tables[table] = data;
+      migrated.tables[table].sessions.forEach((session) => migrateSessionItems(session, migrated));
       return;
     }
     const orders = Array.isArray(data.orders) ? data.orders : [];
@@ -131,11 +142,26 @@ function migrateState(value) {
         closedAt: data.closedAt || null,
         orders
       };
+      migrateSessionItems(session, migrated);
       migrated.tables[table].sessions.push(session);
       if (!session.closedAt) migrated.tables[table].activeSessionId = session.id;
     }
   });
   return migrated;
+}
+
+function migrateSessionItems(session, targetState = state) {
+  session.orders = Array.isArray(session.orders) ? session.orders : [];
+  session.orders.forEach((order) => {
+    order.items = Array.isArray(order.items) ? order.items : [];
+    order.items.forEach((item) => {
+      if (!item.lineId) item.lineId = randomId();
+      if (!item.requestedAt) item.requestedAt = order.createdAt || session.openedAt || new Date().toISOString();
+      if (!item.sequence) item.sequence = ++targetState.lastItemSequence;
+      if (!item.status) item.status = item.station === "bar" ? "registrado" : normalizeKitchenStatus(order.status);
+    });
+    order.status = derivedOrderStatus(order);
+  });
 }
 
 function saveState() {
@@ -174,6 +200,38 @@ function orderTotal(order) {
 
 function sessionSubtotal(session) {
   return session ? session.orders.reduce((sum, order) => sum + orderTotal(order), 0) : 0;
+}
+
+function itemTotal(item) {
+  return item.price * item.qty;
+}
+
+function normalizeKitchenStatus(status) {
+  return { novo: "solicitado", preparando: "preparando", pronto: "pronto", entregue: "entregue" }[status] || status || "solicitado";
+}
+
+function derivedOrderStatus(order) {
+  const statuses = order.items.map((item) => item.status);
+  if (!statuses.length) return "solicitado";
+  if (statuses.every((status) => status === "registrado")) return "registrado";
+  if (statuses.every((status) => status === "registrado" || status === "entregue")) return "entregue";
+  if (statuses.some((status) => status === "pronto")) return "pronto";
+  if (statuses.some((status) => status === "preparando")) return "preparando";
+  return "solicitado";
+}
+
+function activeSessionItems(session = activeSession()) {
+  if (!session) return [];
+  return session.orders.flatMap((order) => order.items.map((item) => ({ ...item, order, table: session.table, sessionOpenedAt: session.openedAt })));
+}
+
+function activeTableKitchenCounts(tableNumber = ui.table) {
+  const items = activeSessionItems(activeSession(tableNumber)).filter((item) => item.station === "cozinha");
+  return items.reduce((acc, item) => {
+    acc.total += 1;
+    acc[item.status] = (acc[item.status] || 0) + 1;
+    return acc;
+  }, { total: 0, solicitado: 0, preparando: 0, pronto: 0, entregue: 0 });
 }
 
 function serviceFee(value) {
@@ -332,9 +390,18 @@ function renderTables() {
     const table = index + 1;
     const subtotal = tableSubtotal(table);
     const session = activeSession(table);
-    const label = session ? `${money.format(finalTotal(subtotal))}` : "Livre";
+    const counts = activeTableKitchenCounts(table);
+    const statusClass = !session ? "free" : counts.pronto ? "has-ready" : counts.preparando || counts.solicitado ? "has-kitchen" : "open";
+    const kitchenLabel = counts.pronto
+      ? `${counts.pronto} pronto${counts.pronto > 1 ? "s" : ""}`
+      : counts.preparando
+        ? `${counts.preparando} em preparo`
+        : counts.solicitado
+          ? `${counts.solicitado} na fila`
+          : "";
+    const label = session ? `${money.format(finalTotal(subtotal))}${kitchenLabel ? ` - ${kitchenLabel}` : ""}` : "Livre";
     return `
-      <button class="table-button ${table === ui.table ? "active" : ""}" data-table="${table}" type="button">
+      <button class="table-button ${statusClass} ${table === ui.table ? "active" : ""}" data-table="${table}" type="button">
         Mesa ${table}
         <span>${label}</span>
       </button>
@@ -345,12 +412,16 @@ function renderTables() {
 function renderWaiter() {
   const session = activeSession();
   const subtotal = tableSubtotal();
+  const counts = activeTableKitchenCounts();
+  const kitchenSummary = counts.total
+    ? ` Cozinha: ${counts.solicitado} na fila, ${counts.preparando} em preparo, ${counts.pronto} pronto(s), ${counts.entregue} entregue(s).`
+    : "";
   document.getElementById("active-table-label").textContent = `Mesa ${ui.table}`;
   document.getElementById("active-table-subtotal").textContent = money.format(subtotal);
   document.getElementById("active-table-service").textContent = money.format(serviceFee(subtotal));
   document.getElementById("active-table-total").textContent = money.format(finalTotal(subtotal));
   document.getElementById("active-session-meta").textContent = session
-    ? `Mesa aberta em ${formatDateTime(session.openedAt)}. Fechamento ainda em aberto.`
+    ? `Mesa aberta em ${formatDateTime(session.openedAt)}. Fechamento ainda em aberto.${kitchenSummary}`
     : "Mesa livre. O horario de abertura sera criado no primeiro pedido.";
   document.getElementById("waiter-menu").innerHTML = filteredItems("waiter-search", "waiter-category").map((item) => `
     <article class="quick-item">
@@ -404,53 +475,78 @@ function renderCurrentSessionHistory() {
 
 function renderKitchen() {
   document.querySelectorAll(".segment").forEach((button) => button.classList.toggle("active", button.dataset.station === ui.station));
-  const orders = allSessions()
+  const items = allSessions()
     .filter((session) => !session.closedAt)
-    .flatMap((session) => session.orders.map((order) => ({ ...order, table: session.table, sessionOpenedAt: session.openedAt })))
-    .filter((order) => order.status !== "entregue")
-    .filter((order) => ui.station === "all" || order.items.some((item) => item.station === ui.station))
-    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    .flatMap((session) => activeSessionItems(session))
+    .filter((item) => item.station === "cozinha")
+    .filter((item) => item.status !== "entregue")
+    .filter((item) => ui.station === "ready" ? item.status === "pronto" : true)
+    .sort((a, b) => a.sequence - b.sequence);
 
   const board = document.getElementById("kitchen-board");
-  if (!orders.length) {
+  if (!items.length) {
     board.className = "kitchen-board empty-state";
     board.textContent = "Nenhum pedido pendente no momento.";
     return;
   }
   board.className = "kitchen-board";
-  board.innerHTML = orders.map((order) => orderCard(order, true)).join("");
+  board.innerHTML = items.map(kitchenItemCard).join("");
 }
 
 function orderCard(order, kitchenMode, session = null) {
-  const items = kitchenMode && ui.station !== "all" ? order.items.filter((item) => item.station === ui.station) : order.items;
-  const actions = kitchenMode ? `
-    <div class="status-actions">
-      <button class="status-button ${order.status === "novo" ? "next" : ""}" data-status="${order.id}:preparando" type="button">Preparando</button>
-      <button class="status-button ${order.status === "preparando" ? "next" : ""}" data-status="${order.id}:pronto" type="button">Pronto</button>
-      <button class="status-button ${order.status === "pronto" ? "next" : ""}" data-status="${order.id}:entregue" type="button">Entregue</button>
-    </div>
-  ` : "";
   const opened = session?.openedAt || order.sessionOpenedAt;
   return `
-    <article class="${kitchenMode ? "order-card" : "history-card"}">
+    <article class="history-card">
       <header>
         <div>
           <h3>Pedido #${order.number} - Mesa ${order.table || ui.table}</h3>
           <p>Pedido recebido em ${formatDateTime(order.createdAt)}${opened ? ` - Mesa aberta em ${formatDateTime(opened)}` : ""}${order.note ? ` - ${escapeHtml(order.note)}` : ""}</p>
         </div>
-        <span class="status ${order.status}">${statusLabel(order.status)}</span>
+        <span class="status ${derivedOrderStatus(order)}">${statusLabel(derivedOrderStatus(order))}</span>
       </header>
       <ul class="item-list">
-        ${items.map((item) => `
-          <li>
-            <span>${item.qty}x ${item.name}</span>
-            <strong>${money.format(item.price * item.qty)}</strong>
+        ${order.items.map((item) => `
+          <li class="item-line ${item.status}">
+            <span>
+              <b>#${item.sequence}</b> - ${item.qty}x ${item.name}
+              <small>${item.station === "bar" ? "Bar registrado na conta" : "Cozinha"} - ${statusLabel(item.status)}</small>
+            </span>
+            <strong>${money.format(itemTotal(item))}</strong>
+            ${waiterItemActions(item)}
           </li>
         `).join("")}
       </ul>
-      ${actions}
     </article>
   `;
+}
+
+function kitchenItemCard(item) {
+  return `
+    <article class="order-card kitchen-line ${item.status}">
+      <header>
+        <div>
+          <h3>#${item.sequence} - Mesa ${item.table}</h3>
+          <p>Pedido #${item.order.number} recebido em ${formatDateTime(item.requestedAt)}${item.order.note ? ` - ${escapeHtml(item.order.note)}` : ""}</p>
+        </div>
+        <span class="status ${item.status}">${statusLabel(item.status)}</span>
+      </header>
+      <ul class="item-list">
+        <li>
+          <span>${item.qty}x ${item.name}</span>
+          <strong>${money.format(itemTotal(item))}</strong>
+        </li>
+      </ul>
+      <div class="status-actions">
+        ${item.status === "solicitado" ? `<button class="status-button next" data-item-status="${item.lineId}:preparando" type="button">Em preparo</button>` : ""}
+        ${item.status === "solicitado" || item.status === "preparando" ? `<button class="status-button ${item.status === "preparando" ? "next" : ""}" data-item-status="${item.lineId}:pronto" type="button">Pronto</button>` : ""}
+      </div>
+    </article>
+  `;
+}
+
+function waiterItemActions(item) {
+  if (item.station !== "cozinha" || item.status !== "pronto") return "";
+  return `<button class="status-button next" data-item-status="${item.lineId}:entregue" type="button">Marcar entregue</button>`;
 }
 
 function renderSessionHistory() {
@@ -485,6 +581,7 @@ function renderSessionHistory() {
 
 function sessionCard(session) {
   const subtotal = sessionSubtotal(session);
+  const payment = session.payment;
   return `
     <article class="session-card">
       <header>
@@ -498,14 +595,15 @@ function sessionCard(session) {
         <span>Subtotal <b>${money.format(subtotal)}</b></span>
         <span>10% garcom <b>${money.format(serviceFee(subtotal))}</b></span>
         <span>Total final <b>${money.format(finalTotal(subtotal))}</b></span>
+        <span>Divisao <b>${payment?.splitCount || 1} x ${money.format(payment?.perPerson || finalTotal(subtotal))}</b></span>
       </div>
       <ul class="item-list">
-        ${session.orders.map((order) => `
-          <li>
-            <span>#${order.number} - ${formatDateTime(order.createdAt)} - ${order.items.map((item) => `${item.qty}x ${item.name}`).join(", ")}</span>
-            <strong>${money.format(orderTotal(order))}</strong>
+        ${session.orders.flatMap((order) => order.items.map((item) => `
+          <li class="item-line ${item.status}">
+            <span>#${item.sequence} - Pedido #${order.number} - ${formatDateTime(item.requestedAt)} - ${item.qty}x ${item.name} - ${statusLabel(item.status)}</span>
+            <strong>${money.format(itemTotal(item))}</strong>
           </li>
-        `).join("")}
+        `)).join("")}
       </ul>
     </article>
   `;
@@ -516,7 +614,14 @@ function allSessions() {
 }
 
 function statusLabel(status) {
-  return { novo: "Novo", preparando: "Preparando", pronto: "Pronto", entregue: "Entregue" }[status] || status;
+  return {
+    solicitado: "Solicitado",
+    registrado: "Registrado",
+    novo: "Novo",
+    preparando: "Em preparo",
+    pronto: "Pronto",
+    entregue: "Entregue"
+  }[status] || status;
 }
 
 function addToCart(id) {
@@ -543,27 +648,41 @@ function sendOrder() {
     id: randomId(),
     number: ++state.lastOrderNumber,
     createdAt,
-    status: "novo",
+    status: "solicitado",
     note: document.getElementById("order-note").value.trim(),
-    items: ui.cart.map((item) => ({ ...item }))
+    items: ui.cart.map((item) => ({
+      ...item,
+      lineId: randomId(),
+      sequence: ++state.lastItemSequence,
+      requestedAt: createdAt,
+      status: item.station === "bar" ? "registrado" : "solicitado"
+    }))
   };
+  order.status = derivedOrderStatus(order);
   session.orders.push(order);
   ui.cart = [];
   document.getElementById("order-note").value = "";
   saveState();
-  toast(`Pedido #${order.number} enviado para mesa ${ui.table}.`);
+  toast(`Pedido #${order.number} enviado para mesa ${ui.table}. Itens de bar ficaram registrados na conta.`);
   render();
 }
 
-function updateOrderStatus(orderId, status) {
+function updateItemStatus(lineId, status) {
   for (const session of allSessions()) {
-    const order = session.orders.find((entry) => entry.id === orderId);
-    if (order) {
-      order.status = status;
-      saveState();
-      toast(`Pedido #${order.number}: ${statusLabel(status)}.`);
-      render();
-      return;
+    for (const order of session.orders) {
+      const item = order.items.find((entry) => entry.lineId === lineId);
+      if (item) {
+        if (item.station === "bar") {
+          toast("Item de bar ja esta registrado na conta.");
+          return;
+        }
+        item.status = status;
+        order.status = derivedOrderStatus(order);
+        saveState();
+        toast(`Mesa ${session.table}: ${item.name} - ${statusLabel(status)}.`);
+        render();
+        return;
+      }
     }
   }
 }
@@ -575,12 +694,19 @@ function closeTable() {
     return;
   }
   const subtotal = sessionSubtotal(session);
-  const confirmed = confirm(`Fechar mesa ${ui.table} no total final de ${money.format(finalTotal(subtotal))}? Inclui 10% do garcom (${money.format(serviceFee(subtotal))}).`);
+  const splitInput = document.getElementById("payment-split");
+  const splitCount = Math.max(1, Number(splitInput.value) || 1);
+  const total = finalTotal(subtotal);
+  const perPerson = total / splitCount;
+  const pendingReady = activeSessionItems(session).filter((item) => item.status === "pronto").length;
+  const pendingMessage = pendingReady ? `\n\nAtencao: ainda ha ${pendingReady} item(ns) pronto(s) sem marcar entrega.` : "";
+  const confirmed = confirm(`Fechar mesa ${ui.table} no total final de ${money.format(total)}? Inclui 10% do garcom (${money.format(serviceFee(subtotal))}).\n\nDivisao: ${splitCount} pessoa(s), ${money.format(perPerson)} por pessoa.${pendingMessage}`);
   if (!confirmed) return;
   session.closedAt = new Date().toISOString();
+  session.payment = { splitCount, perPerson, subtotal, service: serviceFee(subtotal), total };
   tableState().activeSessionId = null;
   saveState();
-  toast(`Mesa ${ui.table} fechada em ${money.format(finalTotal(subtotal))}.`);
+  toast(`Mesa ${ui.table} fechada em ${money.format(total)} (${splitCount} pessoa(s)).`);
   render();
 }
 
@@ -878,7 +1004,7 @@ function hydrateControls() {
     const addButton = event.target.closest("[data-add]");
     const incButton = event.target.closest("[data-inc]");
     const decButton = event.target.closest("[data-dec]");
-    const statusButton = event.target.closest("[data-status]");
+    const statusButton = event.target.closest("[data-item-status]");
     if (tableButton) {
       ui.table = Number(tableButton.dataset.table);
       ui.cart = [];
@@ -888,8 +1014,8 @@ function hydrateControls() {
     if (incButton) changeQty(incButton.dataset.inc, 1);
     if (decButton) changeQty(decButton.dataset.dec, -1);
     if (statusButton) {
-      const [id, status] = statusButton.dataset.status.split(":");
-      updateOrderStatus(id, status);
+      const [id, status] = statusButton.dataset.itemStatus.split(":");
+      updateItemStatus(id, status);
     }
   });
 }

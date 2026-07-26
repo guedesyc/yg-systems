@@ -11,6 +11,7 @@
   --ready: #16643f;
   --prep: #9b6419;
   --new: #315f8a;
+  --registered: #5e6670;
   --shadow: 0 16px 42px rgba(31, 37, 40, 0.1);
 }
 
@@ -414,6 +415,25 @@ textarea:focus {
   color: rgba(255, 255, 255, 0.78);
 }
 
+.table-button.open {
+  border-color: rgba(15, 107, 95, 0.32);
+}
+
+.table-button.has-kitchen {
+  border-color: rgba(155, 100, 25, 0.45);
+  background: #fff8eb;
+}
+
+.table-button.has-ready {
+  color: #fff;
+  border-color: var(--ready);
+  background: var(--ready);
+}
+
+.table-button.has-ready span {
+  color: rgba(255, 255, 255, 0.82);
+}
+
 .order-title {
   display: flex;
   align-items: center;
@@ -642,6 +662,17 @@ textarea:focus {
   border-top: 1px solid var(--line);
 }
 
+.close-tools {
+  display: flex;
+  align-items: end;
+  justify-content: end;
+  gap: 10px;
+}
+
+.split-field {
+  width: 96px;
+}
+
 .history-list,
 .kitchen-board,
 .session-history {
@@ -711,7 +742,7 @@ textarea:focus {
 
 .session-totals {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   margin: 12px 0;
   padding: 10px;
@@ -742,6 +773,7 @@ textarea:focus {
 
 .item-list li {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
   padding: 8px 0;
@@ -753,8 +785,30 @@ textarea:focus {
   overflow-wrap: anywhere;
 }
 
+.item-list small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
 .item-list strong {
   white-space: nowrap;
+}
+
+.item-line.pronto {
+  padding: 10px;
+  background: rgba(22, 100, 63, 0.08);
+  border: 1px solid rgba(22, 100, 63, 0.22);
+  border-radius: 8px;
+}
+
+.item-line.preparando {
+  padding: 10px;
+  background: rgba(155, 100, 25, 0.08);
+  border: 1px solid rgba(155, 100, 25, 0.2);
+  border-radius: 8px;
 }
 
 .status {
@@ -772,6 +826,14 @@ textarea:focus {
   background: var(--new);
 }
 
+.status.solicitado {
+  background: var(--new);
+}
+
+.status.registrado {
+  background: var(--registered);
+}
+
 .status.preparando {
   background: var(--prep);
 }
@@ -782,6 +844,11 @@ textarea:focus {
 
 .status.entregue {
   background: #6c7370;
+}
+
+.kitchen-line.pronto {
+  border-color: rgba(22, 100, 63, 0.34);
+  box-shadow: 0 0 0 3px rgba(22, 100, 63, 0.08);
 }
 
 .status-actions {
@@ -1007,6 +1074,15 @@ textarea:focus {
   .cart-footer {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .close-tools {
+    align-items: stretch;
+    justify-content: stretch;
+  }
+
+  .split-field {
+    width: 100%;
   }
 
   .login-actions {
