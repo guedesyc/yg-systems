@@ -393,17 +393,17 @@ function renderTables() {
     const counts = activeTableKitchenCounts(table);
     const statusClass = !session ? "free" : counts.pronto ? "has-ready" : counts.preparando || counts.solicitado ? "has-kitchen" : "open";
     const kitchenLabel = counts.pronto
-      ? `${counts.pronto} pronto${counts.pronto > 1 ? "s" : ""}`
+      ? `${counts.pronto} item${counts.pronto > 1 ? "s" : ""} pronto${counts.pronto > 1 ? "s" : ""}`
       : counts.preparando
         ? `${counts.preparando} em preparo`
         : counts.solicitado
           ? `${counts.solicitado} na fila`
-          : "";
-    const label = session ? `${money.format(finalTotal(subtotal))}${kitchenLabel ? ` - ${kitchenLabel}` : ""}` : "Livre";
+          : "Sem pendencia";
     return `
       <button class="table-button ${statusClass} ${table === ui.table ? "active" : ""}" data-table="${table}" type="button">
-        Mesa ${table}
-        <span>${label}</span>
+        <strong>Mesa ${table}</strong>
+        <span>${session ? money.format(finalTotal(subtotal)) : "Livre"}</span>
+        ${session ? `<em>${kitchenLabel}</em>` : ""}
       </button>
     `;
   }).join("");
@@ -413,15 +413,20 @@ function renderWaiter() {
   const session = activeSession();
   const subtotal = tableSubtotal();
   const counts = activeTableKitchenCounts();
-  const kitchenSummary = counts.total
-    ? ` Cozinha: ${counts.solicitado} na fila, ${counts.preparando} em preparo, ${counts.pronto} pronto(s), ${counts.entregue} entregue(s).`
-    : "";
+  const kitchenSummary = counts.total ? `
+    <div class="waiter-status-grid">
+      <span><b>${counts.solicitado}</b> na fila</span>
+      <span><b>${counts.preparando}</b> em preparo</span>
+      <span class="${counts.pronto ? "ready-alert" : ""}"><b>${counts.pronto}</b> pronto(s) para buscar</span>
+      <span><b>${counts.entregue}</b> entregue(s)</span>
+    </div>
+  ` : "";
   document.getElementById("active-table-label").textContent = `Mesa ${ui.table}`;
   document.getElementById("active-table-subtotal").textContent = money.format(subtotal);
   document.getElementById("active-table-service").textContent = money.format(serviceFee(subtotal));
   document.getElementById("active-table-total").textContent = money.format(finalTotal(subtotal));
-  document.getElementById("active-session-meta").textContent = session
-    ? `Mesa aberta em ${formatDateTime(session.openedAt)}. Fechamento ainda em aberto.${kitchenSummary}`
+  document.getElementById("active-session-meta").innerHTML = session
+    ? `<strong>Mesa aberta em ${formatDateTime(session.openedAt)}.</strong><span>Fechamento ainda em aberto.</span>${kitchenSummary}`
     : "Mesa livre. O horario de abertura sera criado no primeiro pedido.";
   document.getElementById("waiter-menu").innerHTML = filteredItems("waiter-search", "waiter-category").map((item) => `
     <article class="quick-item">
@@ -480,7 +485,7 @@ function renderKitchen() {
     .flatMap((session) => activeSessionItems(session))
     .filter((item) => item.station === "cozinha")
     .filter((item) => item.status !== "entregue")
-    .filter((item) => ui.station === "ready" ? item.status === "pronto" : true)
+    .filter((item) => ui.station === "ready" ? item.status === "pronto" : ui.station === "cozinha" ? item.status !== "pronto" : true)
     .sort((a, b) => a.sequence - b.sequence);
 
   const board = document.getElementById("kitchen-board");
@@ -507,10 +512,14 @@ function orderCard(order, kitchenMode, session = null) {
       <ul class="item-list">
         ${order.items.map((item) => `
           <li class="item-line ${item.status}">
-            <span>
-              <b>#${item.sequence}</b> - ${item.qty}x ${item.name}
-              <small>${item.station === "bar" ? "Bar registrado na conta" : "Cozinha"} - ${statusLabel(item.status)}</small>
-            </span>
+            <div class="item-main">
+              <span class="line-number">#${item.sequence}</span>
+              <span>
+                <b>${item.qty}x ${item.name}</b>
+                <small>${item.station === "bar" ? "Item de bar: nao vai para cozinha" : "Item de cozinha acompanhado pela cozinheira"}</small>
+              </span>
+            </div>
+            <span class="status ${item.status}">${statusLabel(item.status)}</span>
             <strong>${money.format(itemTotal(item))}</strong>
             ${waiterItemActions(item)}
           </li>
@@ -525,17 +534,12 @@ function kitchenItemCard(item) {
     <article class="order-card kitchen-line ${item.status}">
       <header>
         <div>
-          <h3>#${item.sequence} - Mesa ${item.table}</h3>
-          <p>Pedido #${item.order.number} recebido em ${formatDateTime(item.requestedAt)}${item.order.note ? ` - ${escapeHtml(item.order.note)}` : ""}</p>
+          <p class="kitchen-label">Item da cozinha</p>
+          <h3>${item.qty}x ${item.name}</h3>
+          <p>#${item.sequence} - Mesa ${item.table} - Pedido #${item.order.number} - ${formatDateTime(item.requestedAt)}${item.order.note ? ` - ${escapeHtml(item.order.note)}` : ""}</p>
         </div>
         <span class="status ${item.status}">${statusLabel(item.status)}</span>
       </header>
-      <ul class="item-list">
-        <li>
-          <span>${item.qty}x ${item.name}</span>
-          <strong>${money.format(itemTotal(item))}</strong>
-        </li>
-      </ul>
       <div class="status-actions">
         ${item.status === "solicitado" ? `<button class="status-button next" data-item-status="${item.lineId}:preparando" type="button">Em preparo</button>` : ""}
         ${item.status === "solicitado" || item.status === "preparando" ? `<button class="status-button ${item.status === "preparando" ? "next" : ""}" data-item-status="${item.lineId}:pronto" type="button">Pronto</button>` : ""}
