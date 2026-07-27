@@ -1315,6 +1315,15 @@ textarea:focus {
   color: #555;
 }
 
+.bill-canceled {
+  color: #777;
+  text-decoration: line-through;
+}
+
+.bill-canceled small {
+  text-decoration: none;
+}
+
 .bill-totals {
   display: grid;
   gap: 8px;

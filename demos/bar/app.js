@@ -842,6 +842,7 @@ function reopenSession(sessionId) {
   delete session.payment;
   tableState(session.table).activeSessionId = session.id;
   ui.table = session.table;
+  resetPaymentControls();
   saveState();
   toast(`Mesa ${session.table} reaberta para ajustes.`);
   setView("waiter");
@@ -859,6 +860,13 @@ function printCurrentBill() {
   setTimeout(() => document.body.classList.remove("printing-bill"), 300);
 }
 
+function resetPaymentControls() {
+  document.getElementById("payment-split").value = "1";
+  document.getElementById("service-toggle").checked = true;
+  document.getElementById("payment-method").value = "Nao informado";
+  ui.includeService = true;
+}
+
 function billMarkup(session) {
   const subtotal = sessionSubtotal(session);
   const service = ui.includeService ? serviceFee(subtotal) : 0;
@@ -866,7 +874,7 @@ function billMarkup(session) {
   const splitCount = Math.max(1, Number(document.getElementById("payment-split").value) || 1);
   const perPerson = total / splitCount;
   const method = document.getElementById("payment-method").value;
-  const items = activeSessionItems(session).filter((item) => item.status !== "cancelado");
+  const items = activeSessionItems(session);
   return `
     <section class="bill-sheet">
       <header>
@@ -880,7 +888,7 @@ function billMarkup(session) {
       <table>
         <thead><tr><th>Item</th><th>Qtd</th><th>Valor</th></tr></thead>
         <tbody>
-          ${items.map((item) => `<tr><td>${escapeHtml(item.name)}${item.note ? `<small>Obs.: ${escapeHtml(item.note)}</small>` : ""}</td><td>${item.qty}</td><td>${money.format(itemTotal(item))}</td></tr>`).join("")}
+          ${items.map((item) => `<tr class="${item.status === "cancelado" ? "bill-canceled" : ""}"><td>${escapeHtml(item.name)} <small>${statusLabel(item.status)}</small>${item.note ? `<small>Obs.: ${escapeHtml(item.note)}</small>` : ""}${item.cancelReason ? `<small>Cancelado: ${escapeHtml(item.cancelReason)}</small>` : ""}</td><td>${item.qty}</td><td>${money.format(itemTotal(item))}</td></tr>`).join("")}
         </tbody>
       </table>
       <div class="bill-totals">
@@ -1259,6 +1267,7 @@ function hydrateControls() {
     if (tableButton) {
       ui.table = Number(tableButton.dataset.table);
       ui.cart = [];
+      resetPaymentControls();
       render();
     }
     if (addButton) addToCart(addButton.dataset.add);
