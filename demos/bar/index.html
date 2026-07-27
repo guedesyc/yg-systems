@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>YG Bar | Demo personalizada</title>
     <link rel="stylesheet" href="../shared/demo-runtime.css" />
-    <link rel="stylesheet" href="styles.css?v=bar-op-5" />
+    <link rel="stylesheet" href="styles.css?v=bar-op-6" />
   </head>
   <body>
     <header class="topbar">
@@ -146,6 +146,7 @@
                       <option value="Misto">Misto</option>
                     </select>
                   </label>
+                  <button id="print-bill" class="ghost-button" type="button">Imprimir conta</button>
                   <button id="close-table" class="ghost-button" type="button">Fechar mesa</button>
                 </div>
               </div>
@@ -194,6 +195,7 @@
           </div>
         </div>
         <div id="session-summary" class="summary-grid"></div>
+        <div id="admin-insights" class="insights-grid"></div>
         <div id="session-history" class="session-history"></div>
       </section>
 
@@ -214,6 +216,7 @@
       <div class="toast" role="status"></div>
     </template>
     <div id="toast-root" class="toast-root"></div>
+    <div id="bill-print-root" class="bill-print-root" aria-hidden="true"></div>
 
     <div id="login-modal" class="modal-backdrop" hidden>
       <section class="login-modal" role="dialog" aria-modal="true" aria-labelledby="login-title">
@@ -244,7 +247,7 @@
     </div>
 
     <script src="../shared/demo-runtime.js"></script>
-    <script src="app.js?v=bar-op-5"></script>
+    <script src="app.js?v=bar-op-6"></script>
     <script src="demo-adapter.js"></script>
   </body>
 </html>

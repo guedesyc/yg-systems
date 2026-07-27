@@ -105,7 +105,9 @@ const ui = {
   station: "all",
   sessionStartDate: todayInputValue(),
   sessionEndDate: todayInputValue(),
-  includeService: true
+  includeService: true,
+  openPublicCategories: new Set(),
+  lastAddedId: null
 };
 
 let state = loadState();
@@ -407,13 +409,19 @@ function renderPublicMenu() {
   document.getElementById("public-menu").innerHTML = categories.map((category) => {
     const categoryItems = items.filter((item) => item.category === category);
     if (!categoryItems.length) return "";
+    const isOpen = Boolean(query) || ui.openPublicCategories.has(category);
     return `
-      <section class="menu-category">
-        <div class="menu-category-head">
-          <h3>${category}</h3>
-          <span>${categoryItems.length} itens</span>
+      <section class="menu-category ${isOpen ? "open" : ""}">
+        <button class="menu-category-head" data-menu-category="${escapeHtml(category)}" type="button" aria-expanded="${isOpen}">
+          <span>
+            <strong>${category}</strong>
+            <small>${categoryItems.length} itens</small>
+          </span>
+          <b aria-hidden="true">+</b>
+        </button>
+        <div class="menu-category-body">
+          <div class="menu-grid">${categoryItems.map(menuCard).join("")}</div>
         </div>
-        <div class="menu-grid">${categoryItems.map(menuCard).join("")}</div>
       </section>
     `;
   }).join("");
@@ -481,12 +489,12 @@ function renderWaiter() {
     ? `<strong>Mesa aberta em ${formatDateTime(session.openedAt)}.</strong><span>Fechamento ainda em aberto.</span>${kitchenSummary}`
     : "Mesa livre. O horario de abertura sera criado no primeiro pedido.";
   document.getElementById("waiter-menu").innerHTML = filteredItems("waiter-search", "waiter-category").map((item) => `
-    <article class="quick-item">
+    <article class="quick-item ${ui.lastAddedId === item.id ? "just-added" : ""}">
       <div>
         <strong>${item.icon} ${item.name}</strong>
         <span>${money.format(item.price)} - ${item.station === "bar" ? "Bar" : "Cozinha"}</span>
       </div>
-      <button class="add-button" data-add="${item.id}" type="button" aria-label="Adicionar ${item.name}">+</button>
+      <button class="add-button ${ui.lastAddedId === item.id ? "pulse-add" : ""}" data-add="${item.id}" type="button" aria-label="Adicionar ${item.name}">+</button>
     </article>
   `).join("");
   renderCart();
@@ -634,6 +642,7 @@ function renderSessionHistory() {
     <article class="summary-card"><span>10% garcom</span><strong>${money.format(summary.service)}</strong></article>
     <article class="summary-card"><span>Total final</span><strong>${money.format(summary.total)}</strong></article>
   `;
+  renderAdminInsights(sessions);
 
   const root = document.getElementById("session-history");
   if (!sessions.length) {
@@ -643,6 +652,35 @@ function renderSessionHistory() {
   }
   root.className = "session-history";
   root.innerHTML = sessions.map(sessionCard).join("");
+}
+
+function renderAdminInsights(sessions) {
+  const items = sessions.flatMap((session) => activeSessionItems(session));
+  const validItems = items.filter((item) => item.status !== "cancelado");
+  const canceledItems = items.filter((item) => item.status === "cancelado");
+  const itemRanking = validItems.reduce((acc, item) => {
+    acc[item.name] = (acc[item.name] || 0) + item.qty;
+    return acc;
+  }, {});
+  const topItem = Object.entries(itemRanking).sort((a, b) => b[1] - a[1])[0];
+  const payments = sessions.reduce((acc, session) => {
+    if (!session.closedAt) return acc;
+    const method = session.payment?.method || "Nao informado";
+    acc[method] = (acc[method] || 0) + sessionFinalTotal(session);
+    return acc;
+  }, {});
+  const paymentText = Object.entries(payments).length
+    ? Object.entries(payments).map(([method, total]) => `${method}: ${money.format(total)}`).join(" | ")
+    : "Sem mesas fechadas";
+
+  document.getElementById("admin-insights").innerHTML = `
+    <article class="summary-card"><span>Mesas abertas</span><strong>${sessions.filter((session) => !session.closedAt).length}</strong></article>
+    <article class="summary-card"><span>Mesas fechadas</span><strong>${sessions.filter((session) => session.closedAt).length}</strong></article>
+    <article class="summary-card"><span>Itens vendidos</span><strong>${validItems.reduce((sum, item) => sum + item.qty, 0)}</strong></article>
+    <article class="summary-card"><span>Itens cancelados</span><strong>${canceledItems.length}</strong></article>
+    <article class="summary-card wide-card"><span>Mais vendido</span><strong>${topItem ? `${topItem[0]} (${topItem[1]})` : "Sem vendas"}</strong></article>
+    <article class="summary-card wide-card"><span>Pagamento</span><strong>${paymentText}</strong></article>
+  `;
 }
 
 function sessionCard(session) {
@@ -655,7 +693,10 @@ function sessionCard(session) {
           <h3>Mesa ${session.table}</h3>
           <p>Aberta em ${formatDateTime(session.openedAt)} - Fechada em ${formatDateTime(session.closedAt)}</p>
         </div>
-        <span class="status ${session.closedAt ? "entregue" : "novo"}">${session.closedAt ? "Fechada" : "Aberta"}</span>
+        <div class="session-actions">
+          <span class="status ${session.closedAt ? "entregue" : "novo"}">${session.closedAt ? "Fechada" : "Aberta"}</span>
+          ${session.closedAt ? `<button class="status-button undo" data-reopen-session="${session.id}" type="button">Reabrir</button>` : ""}
+        </div>
       </header>
       <div class="session-totals">
         <span>Subtotal <b>${money.format(subtotal)}</b></span>
@@ -697,7 +738,14 @@ function addToCart(id) {
   const current = ui.cart.find((entry) => entry.id === id);
   if (current) current.qty += 1;
   else ui.cart.push({ ...item, qty: 1, note: "" });
+  ui.lastAddedId = id;
   renderWaiter();
+  setTimeout(() => {
+    if (ui.lastAddedId === id) {
+      ui.lastAddedId = null;
+      renderWaiter();
+    }
+  }, 520);
 }
 
 function changeQty(id, amount) {
@@ -780,6 +828,70 @@ function cancelItem(lineId) {
       }
     }
   }
+}
+
+function reopenSession(sessionId) {
+  const session = allSessions().find((entry) => entry.id === sessionId);
+  if (!session) return;
+  const currentActive = activeSession(session.table);
+  if (currentActive && currentActive.id !== session.id) {
+    toast(`A mesa ${session.table} ja tem uma comanda aberta.`);
+    return;
+  }
+  session.closedAt = null;
+  delete session.payment;
+  tableState(session.table).activeSessionId = session.id;
+  ui.table = session.table;
+  saveState();
+  toast(`Mesa ${session.table} reaberta para ajustes.`);
+  setView("waiter");
+}
+
+function printCurrentBill() {
+  const session = activeSession();
+  if (!session || !session.orders.length) {
+    toast("Esta mesa ainda nao tem comanda para imprimir.");
+    return;
+  }
+  document.getElementById("bill-print-root").innerHTML = billMarkup(session);
+  document.body.classList.add("printing-bill");
+  window.print();
+  setTimeout(() => document.body.classList.remove("printing-bill"), 300);
+}
+
+function billMarkup(session) {
+  const subtotal = sessionSubtotal(session);
+  const service = ui.includeService ? serviceFee(subtotal) : 0;
+  const total = finalTotal(subtotal, ui.includeService);
+  const splitCount = Math.max(1, Number(document.getElementById("payment-split").value) || 1);
+  const perPerson = total / splitCount;
+  const method = document.getElementById("payment-method").value;
+  const items = activeSessionItems(session).filter((item) => item.status !== "cancelado");
+  return `
+    <section class="bill-sheet">
+      <header>
+        <div>
+          <p>YG Bar</p>
+          <h1>Conta da mesa ${session.table}</h1>
+        </div>
+        <span>${formatDateTime(new Date().toISOString())}</span>
+      </header>
+      <p>Mesa aberta em ${formatDateTime(session.openedAt)}</p>
+      <table>
+        <thead><tr><th>Item</th><th>Qtd</th><th>Valor</th></tr></thead>
+        <tbody>
+          ${items.map((item) => `<tr><td>${escapeHtml(item.name)}${item.note ? `<small>Obs.: ${escapeHtml(item.note)}</small>` : ""}</td><td>${item.qty}</td><td>${money.format(itemTotal(item))}</td></tr>`).join("")}
+        </tbody>
+      </table>
+      <div class="bill-totals">
+        <span>Subtotal <b>${money.format(subtotal)}</b></span>
+        <span>10% garcom <b>${money.format(service)}</b></span>
+        <span>Total <b>${money.format(total)}</b></span>
+        <span>Divisao <b>${splitCount} x ${money.format(perPerson)}</b></span>
+        <span>Pagamento <b>${method}</b></span>
+      </div>
+    </section>
+  `;
 }
 
 function closeTable() {
@@ -1088,6 +1200,7 @@ function hydrateControls() {
   document.getElementById("waiter-category").addEventListener("change", renderWaiter);
   document.getElementById("send-order").addEventListener("click", sendOrder);
   document.getElementById("close-table").addEventListener("click", closeTable);
+  document.getElementById("print-bill").addEventListener("click", printCurrentBill);
   document.getElementById("service-toggle").addEventListener("change", (event) => {
     ui.includeService = event.target.checked;
     renderWaiter();
@@ -1134,6 +1247,15 @@ function hydrateControls() {
     const decButton = event.target.closest("[data-dec]");
     const statusButton = event.target.closest("[data-item-status]");
     const cancelButton = event.target.closest("[data-cancel-item]");
+    const menuCategoryButton = event.target.closest("[data-menu-category]");
+    const reopenButton = event.target.closest("[data-reopen-session]");
+    if (menuCategoryButton) {
+      const category = menuCategoryButton.dataset.menuCategory;
+      if (ui.openPublicCategories.has(category)) ui.openPublicCategories.delete(category);
+      else ui.openPublicCategories.add(category);
+      renderPublicMenu();
+      return;
+    }
     if (tableButton) {
       ui.table = Number(tableButton.dataset.table);
       ui.cart = [];
@@ -1147,6 +1269,7 @@ function hydrateControls() {
       updateItemStatus(id, status);
     }
     if (cancelButton) cancelItem(cancelButton.dataset.cancelItem);
+    if (reopenButton) reopenSession(reopenButton.dataset.reopenSession);
   });
 
   document.body.addEventListener("input", (event) => {
