@@ -871,6 +871,10 @@ textarea:focus {
   width: 150px;
 }
 
+.transfer-field {
+  width: 190px;
+}
+
 .service-field {
   min-width: 92px;
 }
@@ -1507,7 +1511,8 @@ textarea:focus {
   }
 
   .payment-field,
-  .service-field {
+  .service-field,
+  .transfer-field {
     width: 100%;
   }
 

@@ -319,6 +319,12 @@ function dateInSessionRange(dateValue) {
   return (!start || date >= start) && (!end || date <= end);
 }
 
+function filteredHistorySessions() {
+  return allSessions()
+    .filter((session) => !ui.sessionStartDate && !ui.sessionEndDate || dateInSessionRange(session.openedAt) || dateInSessionRange(session.closedAt))
+    .sort((a, b) => new Date(b.openedAt) - new Date(a.openedAt));
+}
+
 function allowedViews(role = ui.role) {
   return rolePermissions[role] || rolePermissions.publico;
 }
@@ -473,6 +479,7 @@ function renderWaiter() {
   const subtotal = tableSubtotal();
   const counts = activeTableKitchenCounts();
   document.querySelector(".order-panel")?.classList.toggle("has-session", Boolean(session?.orders?.length));
+  renderTransferControls(session);
   const kitchenSummary = counts.total ? `
     <div class="waiter-status-grid">
       <span><b>${counts.solicitado}</b> na fila</span>
@@ -499,6 +506,21 @@ function renderWaiter() {
   `).join("");
   renderCart();
   renderCurrentSessionHistory();
+}
+
+function renderTransferControls(session = activeSession()) {
+  const select = document.getElementById("transfer-table");
+  const button = document.getElementById("transfer-table-action");
+  if (!select || !button) return;
+  const options = Array.from({ length: tableCount }, (_, index) => index + 1)
+    .filter((table) => table !== ui.table)
+    .map((table) => {
+      const occupied = Boolean(activeSession(table));
+      return `<option value="${table}" ${occupied ? "disabled" : ""}>Mesa ${table}${occupied ? " ocupada" : ""}</option>`;
+    });
+  select.innerHTML = `<option value="">Escolher mesa</option>${options.join("")}`;
+  select.disabled = !session;
+  button.disabled = !session;
 }
 
 function renderCart() {
@@ -624,9 +646,7 @@ function waiterItemActions(item) {
 }
 
 function renderSessionHistory() {
-  const sessions = allSessions()
-    .filter((session) => !ui.sessionStartDate && !ui.sessionEndDate || dateInSessionRange(session.openedAt) || dateInSessionRange(session.closedAt))
-    .sort((a, b) => new Date(b.openedAt) - new Date(a.openedAt));
+  const sessions = filteredHistorySessions();
   const summary = sessions.reduce((acc, session) => {
     const subtotal = sessionSubtotal(session);
     acc.sessions += 1;
@@ -846,6 +866,115 @@ function reopenSession(sessionId) {
   saveState();
   toast(`Mesa ${session.table} reaberta para ajustes.`);
   setView("waiter");
+}
+
+function transferActiveTable() {
+  const session = activeSession();
+  const target = Number(document.getElementById("transfer-table").value);
+  if (!session) {
+    toast("Nao ha comanda aberta para transferir.");
+    return;
+  }
+  if (!target) {
+    toast("Escolha a mesa de destino.");
+    return;
+  }
+  if (activeSession(target)) {
+    toast(`A mesa ${target} ja esta ocupada.`);
+    return;
+  }
+  const previousTable = ui.table;
+  const confirmed = confirm(`Transferir toda a comanda da mesa ${previousTable} para a mesa ${target}? A mesa ${previousTable} ficara livre.`);
+  if (!confirmed) return;
+  const oldTable = tableState(previousTable);
+  const nextTable = tableState(target);
+  oldTable.sessions = oldTable.sessions.filter((entry) => entry.id !== session.id);
+  oldTable.activeSessionId = null;
+  session.table = target;
+  nextTable.sessions.push(session);
+  nextTable.activeSessionId = session.id;
+  ui.table = target;
+  resetPaymentControls();
+  saveState();
+  toast(`Comanda transferida da mesa ${previousTable} para a mesa ${target}.`);
+  render();
+}
+
+function exportHistoryCsv() {
+  const sessions = filteredHistorySessions();
+  const rows = [["mesa", "abertura", "fechamento", "status", "subtotal", "servico", "total", "pagamento", "divisao", "pedido", "item", "quantidade", "status_item", "valor"]];
+  sessions.forEach((session) => {
+    session.orders.forEach((order) => {
+      order.items.forEach((item) => {
+        rows.push([
+          session.table,
+          formatDateTime(session.openedAt),
+          formatDateTime(session.closedAt),
+          session.closedAt ? "Fechada" : "Aberta",
+          money.format(sessionSubtotal(session)),
+          money.format(sessionServiceTotal(session)),
+          money.format(sessionFinalTotal(session)),
+          session.payment?.method || "Nao informado",
+          session.payment?.splitCount || 1,
+          order.number,
+          item.name,
+          item.qty,
+          statusLabel(item.status),
+          money.format(itemTotal(item))
+        ]);
+      });
+    });
+  });
+  const csv = rows.map((row) => row.map(csvCell).join(";")).join("\n");
+  const blob = new Blob([`\ufeff${csv}`], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `historico-yg-bar-${todayInputValue()}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function csvCell(value) {
+  return `"${String(value ?? "").replace(/"/g, '""')}"`;
+}
+
+function exportHistoryPdf() {
+  const sessions = filteredHistorySessions();
+  document.getElementById("bill-print-root").innerHTML = historyReportMarkup(sessions);
+  document.body.classList.add("printing-bill");
+  window.print();
+  setTimeout(() => document.body.classList.remove("printing-bill"), 300);
+}
+
+function historyReportMarkup(sessions) {
+  const subtotal = sessions.reduce((sum, session) => sum + sessionSubtotal(session), 0);
+  const service = sessions.reduce((sum, session) => sum + sessionServiceTotal(session), 0);
+  const total = sessions.reduce((sum, session) => sum + sessionFinalTotal(session), 0);
+  return `
+    <section class="bill-sheet">
+      <header>
+        <div>
+          <p>YG Bar</p>
+          <h1>Historico de mesas</h1>
+        </div>
+        <span>${formatDateTime(new Date().toISOString())}</span>
+      </header>
+      <p>Periodo: ${ui.sessionStartDate || "inicio"} a ${ui.sessionEndDate || "hoje"}</p>
+      <div class="bill-totals">
+        <span>Ocupacoes <b>${sessions.length}</b></span>
+        <span>Subtotal <b>${money.format(subtotal)}</b></span>
+        <span>10% garcom <b>${money.format(service)}</b></span>
+        <span>Total <b>${money.format(total)}</b></span>
+      </div>
+      <table>
+        <thead><tr><th>Mesa</th><th>Abertura</th><th>Status</th><th>Total</th></tr></thead>
+        <tbody>
+          ${sessions.map((session) => `<tr><td>Mesa ${session.table}</td><td>${formatDateTime(session.openedAt)}</td><td>${session.closedAt ? "Fechada" : "Aberta"}</td><td>${money.format(sessionFinalTotal(session))}</td></tr>`).join("")}
+        </tbody>
+      </table>
+    </section>
+  `;
 }
 
 function printCurrentBill() {
@@ -1209,6 +1338,9 @@ function hydrateControls() {
   document.getElementById("send-order").addEventListener("click", sendOrder);
   document.getElementById("close-table").addEventListener("click", closeTable);
   document.getElementById("print-bill").addEventListener("click", printCurrentBill);
+  document.getElementById("transfer-table-action").addEventListener("click", transferActiveTable);
+  document.getElementById("export-history-csv").addEventListener("click", exportHistoryCsv);
+  document.getElementById("export-history-pdf").addEventListener("click", exportHistoryPdf);
   document.getElementById("service-toggle").addEventListener("change", (event) => {
     ui.includeService = event.target.checked;
     renderWaiter();

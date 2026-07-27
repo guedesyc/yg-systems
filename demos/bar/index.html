@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>YG Bar | Demo personalizada</title>
     <link rel="stylesheet" href="../shared/demo-runtime.css" />
-    <link rel="stylesheet" href="styles.css?v=bar-op-7" />
+    <link rel="stylesheet" href="styles.css?v=bar-op-8" />
   </head>
   <body>
     <header class="topbar">
@@ -146,6 +146,11 @@
                       <option value="Misto">Misto</option>
                     </select>
                   </label>
+                  <label class="field transfer-field">
+                    <span>Transferencia de Mesa</span>
+                    <select id="transfer-table" class="input select"></select>
+                  </label>
+                  <button id="transfer-table-action" class="ghost-button" type="button">Transferir</button>
                   <button id="print-bill" class="ghost-button" type="button">Imprimir conta</button>
                   <button id="close-table" class="ghost-button" type="button">Fechar mesa</button>
                 </div>
@@ -192,6 +197,8 @@
             <button class="ghost-button" data-session-range="week" type="button">Semana</button>
             <button class="ghost-button" data-session-range="month" type="button">Mes</button>
             <button id="clear-session-filter" class="ghost-button" type="button">Todos</button>
+            <button id="export-history-csv" class="ghost-button" type="button">CSV</button>
+            <button id="export-history-pdf" class="ghost-button" type="button">PDF</button>
           </div>
         </div>
         <div id="session-summary" class="summary-grid"></div>
@@ -247,7 +254,7 @@
     </div>
 
     <script src="../shared/demo-runtime.js"></script>
-    <script src="app.js?v=bar-op-7"></script>
+    <script src="app.js?v=bar-op-8"></script>
     <script src="demo-adapter.js"></script>
   </body>
 </html>
