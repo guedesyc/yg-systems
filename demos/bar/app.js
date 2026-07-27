@@ -104,7 +104,8 @@ const ui = {
   cart: [],
   station: "all",
   sessionStartDate: todayInputValue(),
-  sessionEndDate: todayInputValue()
+  sessionEndDate: todayInputValue(),
+  includeService: true
 };
 
 let state = loadState();
@@ -196,7 +197,7 @@ function randomId() {
 }
 
 function orderTotal(order) {
-  return order.items.reduce((sum, item) => sum + item.price * item.qty, 0);
+  return order.items.reduce((sum, item) => sum + itemTotal(item), 0);
 }
 
 function sessionSubtotal(session) {
@@ -204,6 +205,7 @@ function sessionSubtotal(session) {
 }
 
 function itemTotal(item) {
+  if (item.status === "cancelado") return 0;
   return item.price * item.qty;
 }
 
@@ -214,8 +216,9 @@ function normalizeKitchenStatus(status) {
 function derivedOrderStatus(order) {
   const statuses = order.items.map((item) => item.status);
   if (!statuses.length) return "solicitado";
+  if (statuses.every((status) => status === "cancelado")) return "cancelado";
   if (statuses.every((status) => status === "registrado")) return "registrado";
-  if (statuses.every((status) => status === "registrado" || status === "entregue")) return "entregue";
+  if (statuses.every((status) => status === "registrado" || status === "entregue" || status === "cancelado")) return "entregue";
   if (statuses.some((status) => status === "pronto")) return "pronto";
   if (statuses.some((status) => status === "preparando")) return "preparando";
   return "solicitado";
@@ -227,7 +230,7 @@ function activeSessionItems(session = activeSession()) {
 }
 
 function activeTableKitchenCounts(tableNumber = ui.table) {
-  const items = activeSessionItems(activeSession(tableNumber)).filter((item) => item.station === "cozinha");
+  const items = activeSessionItems(activeSession(tableNumber)).filter((item) => item.station === "cozinha" && item.status !== "cancelado");
   return items.reduce((acc, item) => {
     acc.total += 1;
     acc[item.status] = (acc[item.status] || 0) + 1;
@@ -239,8 +242,19 @@ function serviceFee(value) {
   return value * serviceRate;
 }
 
-function finalTotal(value) {
-  return value + serviceFee(value);
+function finalTotal(value, includeService = true) {
+  return includeService ? value + serviceFee(value) : value;
+}
+
+function sessionServiceTotal(session) {
+  if (session?.payment) return session.payment.service;
+  return serviceFee(sessionSubtotal(session));
+}
+
+function sessionFinalTotal(session) {
+  if (session?.payment) return session.payment.total;
+  const subtotal = sessionSubtotal(session);
+  return finalTotal(subtotal);
 }
 
 function tableSubtotal(tableNumber = ui.table) {
@@ -461,8 +475,8 @@ function renderWaiter() {
   ` : "";
   document.getElementById("active-table-label").textContent = `Mesa ${ui.table}`;
   document.getElementById("active-table-subtotal").textContent = money.format(subtotal);
-  document.getElementById("active-table-service").textContent = money.format(serviceFee(subtotal));
-  document.getElementById("active-table-total").textContent = money.format(finalTotal(subtotal));
+  document.getElementById("active-table-service").textContent = money.format(ui.includeService ? serviceFee(subtotal) : 0);
+  document.getElementById("active-table-total").textContent = money.format(finalTotal(subtotal, ui.includeService));
   document.getElementById("active-session-meta").innerHTML = session
     ? `<strong>Mesa aberta em ${formatDateTime(session.openedAt)}.</strong><span>Fechamento ainda em aberto.</span>${kitchenSummary}`
     : "Mesa livre. O horario de abertura sera criado no primeiro pedido.";
@@ -491,6 +505,7 @@ function renderCart() {
         <div>
           <strong>${item.name}</strong>
           <span>${money.format(item.price)} cada - ${item.station === "bar" ? "Bar" : "Cozinha"}</span>
+          <input class="input item-note-input" data-note="${item.id}" type="text" value="${escapeHtml(item.note || "")}" placeholder="Observacao do item" />
         </div>
         <div class="qty-row">
           <button class="qty-button" data-dec="${item.id}" type="button">-</button>
@@ -522,7 +537,7 @@ function renderKitchen() {
     .filter((session) => !session.closedAt)
     .flatMap((session) => activeSessionItems(session))
     .filter((item) => item.station === "cozinha")
-    .filter((item) => item.status !== "entregue")
+    .filter((item) => item.status !== "entregue" && item.status !== "cancelado")
     .filter((item) => ui.station === "ready" ? item.status === "pronto" : ui.station === "cozinha" ? item.status !== "pronto" : true)
     .sort((a, b) => a.sequence - b.sequence);
 
@@ -555,6 +570,8 @@ function orderCard(order, kitchenMode, session = null) {
               <span>
                 <b>${item.qty}x ${item.name}</b>
                 <small>${item.station === "bar" ? "Item de bar: nao vai para cozinha" : "Item de cozinha acompanhado pela cozinheira"}</small>
+                ${item.note ? `<small>Obs.: ${escapeHtml(item.note)}</small>` : ""}
+                ${item.cancelReason ? `<small>Cancelado: ${escapeHtml(item.cancelReason)}</small>` : ""}
               </span>
             </div>
             <span class="status ${item.status}">${statusLabel(item.status)}</span>
@@ -591,8 +608,11 @@ function kitchenItemCard(item) {
 }
 
 function waiterItemActions(item) {
-  if (item.station !== "cozinha" || item.status !== "pronto") return "";
-  return `<button class="status-button next" data-item-status="${item.lineId}:entregue" type="button">Marcar entregue</button>`;
+  if (item.status === "cancelado" || item.status === "entregue") return "";
+  const delivery = item.station === "cozinha" && item.status === "pronto"
+    ? `<button class="status-button next" data-item-status="${item.lineId}:entregue" type="button">Marcar entregue</button>`
+    : "";
+  return `${delivery}<button class="status-button danger" data-cancel-item="${item.lineId}" type="button">Cancelar</button>`;
 }
 
 function renderSessionHistory() {
@@ -603,8 +623,8 @@ function renderSessionHistory() {
     const subtotal = sessionSubtotal(session);
     acc.sessions += 1;
     acc.subtotal += subtotal;
-    acc.service += serviceFee(subtotal);
-    acc.total += finalTotal(subtotal);
+    acc.service += sessionServiceTotal(session);
+    acc.total += sessionFinalTotal(session);
     return acc;
   }, { sessions: 0, subtotal: 0, service: 0, total: 0 });
 
@@ -639,9 +659,10 @@ function sessionCard(session) {
       </header>
       <div class="session-totals">
         <span>Subtotal <b>${money.format(subtotal)}</b></span>
-        <span>10% garcom <b>${money.format(serviceFee(subtotal))}</b></span>
-        <span>Total final <b>${money.format(finalTotal(subtotal))}</b></span>
-        <span>Divisao <b>${payment?.splitCount || 1} x ${money.format(payment?.perPerson || finalTotal(subtotal))}</b></span>
+        <span>10% garcom <b>${money.format(sessionServiceTotal(session))}</b></span>
+        <span>Total final <b>${money.format(sessionFinalTotal(session))}</b></span>
+        <span>Divisao <b>${payment?.splitCount || 1} x ${money.format(payment?.perPerson || sessionFinalTotal(session))}</b></span>
+        <span>Pagamento <b>${payment?.method || "Nao informado"}</b></span>
       </div>
       <ul class="item-list">
         ${session.orders.flatMap((order) => order.items.map((item) => `
@@ -666,7 +687,8 @@ function statusLabel(status) {
     novo: "Novo",
     preparando: "Em preparo",
     pronto: "Pronto",
-    entregue: "Entregue"
+    entregue: "Entregue",
+    cancelado: "Cancelado"
   }[status] || status;
 }
 
@@ -674,7 +696,7 @@ function addToCart(id) {
   const item = menuItems.find((entry) => entry.id === id);
   const current = ui.cart.find((entry) => entry.id === id);
   if (current) current.qty += 1;
-  else ui.cart.push({ ...item, qty: 1 });
+  else ui.cart.push({ ...item, qty: 1, note: "" });
   renderWaiter();
 }
 
@@ -684,6 +706,12 @@ function changeQty(id, amount) {
   item.qty += amount;
   ui.cart = ui.cart.filter((entry) => entry.qty > 0);
   renderWaiter();
+}
+
+function updateCartNote(id, note) {
+  const item = ui.cart.find((entry) => entry.id === id);
+  if (!item) return;
+  item.note = note;
 }
 
 function sendOrder() {
@@ -733,6 +761,27 @@ function updateItemStatus(lineId, status) {
   }
 }
 
+function cancelItem(lineId) {
+  const reason = prompt("Informe o motivo do cancelamento:");
+  if (reason === null) return;
+  const cancelReason = reason.trim() || "Sem motivo informado";
+  for (const session of allSessions()) {
+    for (const order of session.orders) {
+      const item = order.items.find((entry) => entry.lineId === lineId);
+      if (item) {
+        item.status = "cancelado";
+        item.cancelReason = cancelReason;
+        item.canceledAt = new Date().toISOString();
+        order.status = derivedOrderStatus(order);
+        saveState();
+        toast(`Item cancelado na mesa ${session.table}: ${item.name}.`);
+        render();
+        return;
+      }
+    }
+  }
+}
+
 function closeTable() {
   const session = activeSession();
   if (!session || !session.orders.length) {
@@ -741,15 +790,18 @@ function closeTable() {
   }
   const subtotal = sessionSubtotal(session);
   const splitInput = document.getElementById("payment-split");
+  const paymentMethod = document.getElementById("payment-method").value;
+  const includeService = document.getElementById("service-toggle").checked;
   const splitCount = Math.max(1, Number(splitInput.value) || 1);
-  const total = finalTotal(subtotal);
+  const service = includeService ? serviceFee(subtotal) : 0;
+  const total = finalTotal(subtotal, includeService);
   const perPerson = total / splitCount;
   const pendingReady = activeSessionItems(session).filter((item) => item.status === "pronto").length;
   const pendingMessage = pendingReady ? `\n\nAtencao: ainda ha ${pendingReady} item(ns) pronto(s) sem marcar entrega.` : "";
-  const confirmed = confirm(`Fechar mesa ${ui.table} no total final de ${money.format(total)}? Inclui 10% do garcom (${money.format(serviceFee(subtotal))}).\n\nDivisao: ${splitCount} pessoa(s), ${money.format(perPerson)} por pessoa.${pendingMessage}`);
+  const confirmed = confirm(`Fechar mesa ${ui.table} no total final de ${money.format(total)}? 10% do garcom: ${includeService ? money.format(service) : "removido"}.\n\nDivisao: ${splitCount} pessoa(s), ${money.format(perPerson)} por pessoa.\nPagamento: ${paymentMethod}.${pendingMessage}`);
   if (!confirmed) return;
   session.closedAt = new Date().toISOString();
-  session.payment = { splitCount, perPerson, subtotal, service: serviceFee(subtotal), total };
+  session.payment = { splitCount, perPerson, subtotal, service, total, method: paymentMethod, includeService };
   tableState().activeSessionId = null;
   saveState();
   toast(`Mesa ${ui.table} fechada em ${money.format(total)} (${splitCount} pessoa(s)).`);
@@ -1036,6 +1088,11 @@ function hydrateControls() {
   document.getElementById("waiter-category").addEventListener("change", renderWaiter);
   document.getElementById("send-order").addEventListener("click", sendOrder);
   document.getElementById("close-table").addEventListener("click", closeTable);
+  document.getElementById("service-toggle").addEventListener("change", (event) => {
+    ui.includeService = event.target.checked;
+    renderWaiter();
+  });
+  document.getElementById("payment-method").addEventListener("change", renderWaiter);
   document.getElementById("print-qr").addEventListener("click", () => window.print());
   const updateSessionRange = () => {
     ui.sessionStartDate = sessionStartFilter.value;
@@ -1076,6 +1133,7 @@ function hydrateControls() {
     const incButton = event.target.closest("[data-inc]");
     const decButton = event.target.closest("[data-dec]");
     const statusButton = event.target.closest("[data-item-status]");
+    const cancelButton = event.target.closest("[data-cancel-item]");
     if (tableButton) {
       ui.table = Number(tableButton.dataset.table);
       ui.cart = [];
@@ -1088,6 +1146,12 @@ function hydrateControls() {
       const [id, status] = statusButton.dataset.itemStatus.split(":");
       updateItemStatus(id, status);
     }
+    if (cancelButton) cancelItem(cancelButton.dataset.cancelItem);
+  });
+
+  document.body.addEventListener("input", (event) => {
+    const noteInput = event.target.closest("[data-note]");
+    if (noteInput) updateCartNote(noteInput.dataset.note, noteInput.value);
   });
 }
 

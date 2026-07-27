@@ -688,6 +688,12 @@ textarea:focus {
   border-radius: 8px;
 }
 
+.item-note-input {
+  min-height: 36px;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
 .qty-row {
   display: flex;
   align-items: center;
@@ -770,6 +776,7 @@ textarea:focus {
 
 .close-tools {
   display: flex;
+  flex-wrap: wrap;
   align-items: end;
   justify-content: end;
   gap: 10px;
@@ -777,6 +784,29 @@ textarea:focus {
 
 .split-field {
   width: 96px;
+}
+
+.payment-field {
+  width: 150px;
+}
+
+.service-field {
+  min-width: 92px;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 8px 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.toggle-row b {
+  font-size: 13px;
 }
 
 .history-list,
@@ -852,7 +882,7 @@ textarea:focus {
 
 .session-totals {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 10px;
   margin: 12px 0;
   padding: 10px;
@@ -937,8 +967,8 @@ textarea:focus {
 
 .item-line.registrado {
   padding: 10px;
-  background: rgba(94, 102, 112, 0.08);
-  border: 1px solid rgba(94, 102, 112, 0.22);
+  background: rgba(216, 155, 43, 0.12);
+  border: 1px solid rgba(216, 155, 43, 0.28);
   border-radius: 8px;
 }
 
@@ -954,6 +984,14 @@ textarea:focus {
   background: rgba(155, 100, 25, 0.08);
   border: 1px solid rgba(155, 100, 25, 0.2);
   border-radius: 8px;
+}
+
+.item-line.cancelado {
+  padding: 10px;
+  background: rgba(194, 69, 45, 0.08);
+  border: 1px solid rgba(194, 69, 45, 0.22);
+  border-radius: 8px;
+  opacity: 0.88;
 }
 
 .status {
@@ -990,6 +1028,10 @@ textarea:focus {
 
 .status.entregue {
   background: var(--delivered);
+}
+
+.status.cancelado {
+  background: var(--accent);
 }
 
 .kitchen-line.pronto {
@@ -1041,6 +1083,12 @@ textarea:focus {
   color: #7a4b10;
   background: #fff8eb;
   border-color: rgba(155, 100, 25, 0.35);
+}
+
+.status-button.danger {
+  color: var(--accent);
+  background: #fff;
+  border-color: rgba(194, 69, 45, 0.35);
 }
 
 .qr-grid {
@@ -1273,6 +1321,11 @@ textarea:focus {
   }
 
   .split-field {
+    width: 100%;
+  }
+
+  .payment-field,
+  .service-field {
     width: 100%;
   }
 

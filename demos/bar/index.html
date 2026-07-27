@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>YG Bar | Demo personalizada</title>
     <link rel="stylesheet" href="../shared/demo-runtime.css" />
-    <link rel="stylesheet" href="styles.css?v=bar-op-4" />
+    <link rel="stylesheet" href="styles.css?v=bar-op-5" />
   </head>
   <body>
     <header class="topbar">
@@ -129,6 +129,23 @@
                     <span>Pessoas</span>
                     <input id="payment-split" class="input" type="number" min="1" max="99" value="1" />
                   </label>
+                  <label class="field service-field">
+                    <span>10%</span>
+                    <label class="toggle-row">
+                      <input id="service-toggle" type="checkbox" checked />
+                      <b>Incluir</b>
+                    </label>
+                  </label>
+                  <label class="field payment-field">
+                    <span>Pagamento</span>
+                    <select id="payment-method" class="input select">
+                      <option value="Nao informado">Nao informado</option>
+                      <option value="Pix">Pix</option>
+                      <option value="Dinheiro">Dinheiro</option>
+                      <option value="Cartao">Cartao</option>
+                      <option value="Misto">Misto</option>
+                    </select>
+                  </label>
                   <button id="close-table" class="ghost-button" type="button">Fechar mesa</button>
                 </div>
               </div>
@@ -227,7 +244,7 @@
     </div>
 
     <script src="../shared/demo-runtime.js"></script>
-    <script src="app.js?v=bar-op-4"></script>
+    <script src="app.js?v=bar-op-5"></script>
     <script src="demo-adapter.js"></script>
   </body>
 </html>
