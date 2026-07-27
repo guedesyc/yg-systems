@@ -103,7 +103,8 @@ const ui = {
   table: Number(new URLSearchParams(location.search).get("mesa")) || 1,
   cart: [],
   station: "all",
-  sessionDate: todayInputValue()
+  sessionStartDate: todayInputValue(),
+  sessionEndDate: todayInputValue()
 };
 
 let state = loadState();
@@ -264,6 +265,42 @@ function inputDateValue(value) {
   const date = new Date(value);
   const offset = date.getTimezoneOffset() * 60000;
   return new Date(date.getTime() - offset).toISOString().slice(0, 10);
+}
+
+function addDaysInputValue(value, amount) {
+  const date = new Date(`${value}T00:00:00`);
+  date.setDate(date.getDate() + amount);
+  return inputDateValue(date.toISOString());
+}
+
+function monthStartInputValue(value = todayInputValue()) {
+  return `${value.slice(0, 8)}01`;
+}
+
+function monthEndInputValue(value = todayInputValue()) {
+  const date = new Date(`${value}T00:00:00`);
+  date.setMonth(date.getMonth() + 1, 0);
+  return inputDateValue(date.toISOString());
+}
+
+function weekStartInputValue(value = todayInputValue()) {
+  const date = new Date(`${value}T00:00:00`);
+  const weekday = date.getDay();
+  const diff = weekday === 0 ? -6 : 1 - weekday;
+  date.setDate(date.getDate() + diff);
+  return inputDateValue(date.toISOString());
+}
+
+function weekEndInputValue(value = todayInputValue()) {
+  return addDaysInputValue(weekStartInputValue(value), 6);
+}
+
+function dateInSessionRange(dateValue) {
+  if (!dateValue) return false;
+  const date = inputDateValue(dateValue);
+  const start = ui.sessionStartDate || "";
+  const end = ui.sessionEndDate || "";
+  return (!start || date >= start) && (!end || date <= end);
 }
 
 function allowedViews(role = ui.role) {
@@ -560,7 +597,7 @@ function waiterItemActions(item) {
 
 function renderSessionHistory() {
   const sessions = allSessions()
-    .filter((session) => !ui.sessionDate || inputDateValue(session.openedAt) === ui.sessionDate || (session.closedAt && inputDateValue(session.closedAt) === ui.sessionDate))
+    .filter((session) => !ui.sessionStartDate && !ui.sessionEndDate || dateInSessionRange(session.openedAt) || dateInSessionRange(session.closedAt))
     .sort((a, b) => new Date(b.openedAt) - new Date(a.openedAt));
   const summary = sessions.reduce((acc, session) => {
     const subtotal = sessionSubtotal(session);
@@ -966,8 +1003,10 @@ function escapeHtml(value) {
 function hydrateControls() {
   const select = document.getElementById("waiter-category");
   select.innerHTML += categories.map((category) => `<option value="${category}">${category}</option>`).join("");
-  const sessionFilter = document.getElementById("session-date-filter");
-  sessionFilter.value = ui.sessionDate;
+  const sessionStartFilter = document.getElementById("session-start-filter");
+  const sessionEndFilter = document.getElementById("session-end-filter");
+  sessionStartFilter.value = ui.sessionStartDate;
+  sessionEndFilter.value = ui.sessionEndDate;
 
   document.querySelectorAll(".tab").forEach((button) => button.addEventListener("click", () => setView(button.dataset.view)));
   document.querySelectorAll(".segment").forEach((button) => button.addEventListener("click", () => {
@@ -998,13 +1037,36 @@ function hydrateControls() {
   document.getElementById("send-order").addEventListener("click", sendOrder);
   document.getElementById("close-table").addEventListener("click", closeTable);
   document.getElementById("print-qr").addEventListener("click", () => window.print());
-  sessionFilter.addEventListener("change", () => {
-    ui.sessionDate = sessionFilter.value;
+  const updateSessionRange = () => {
+    ui.sessionStartDate = sessionStartFilter.value;
+    ui.sessionEndDate = sessionEndFilter.value;
     renderSessionHistory();
-  });
+  };
+  sessionStartFilter.addEventListener("change", updateSessionRange);
+  sessionEndFilter.addEventListener("change", updateSessionRange);
+  document.querySelectorAll("[data-session-range]").forEach((button) => button.addEventListener("click", () => {
+    const today = todayInputValue();
+    if (button.dataset.sessionRange === "today") {
+      ui.sessionStartDate = today;
+      ui.sessionEndDate = today;
+    }
+    if (button.dataset.sessionRange === "week") {
+      ui.sessionStartDate = weekStartInputValue(today);
+      ui.sessionEndDate = weekEndInputValue(today);
+    }
+    if (button.dataset.sessionRange === "month") {
+      ui.sessionStartDate = monthStartInputValue(today);
+      ui.sessionEndDate = monthEndInputValue(today);
+    }
+    sessionStartFilter.value = ui.sessionStartDate;
+    sessionEndFilter.value = ui.sessionEndDate;
+    renderSessionHistory();
+  }));
   document.getElementById("clear-session-filter").addEventListener("click", () => {
-    ui.sessionDate = "";
-    sessionFilter.value = "";
+    ui.sessionStartDate = "";
+    ui.sessionEndDate = "";
+    sessionStartFilter.value = "";
+    sessionEndFilter.value = "";
     renderSessionHistory();
   });
 

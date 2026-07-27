@@ -820,9 +820,13 @@ textarea:focus {
 
 .history-filters {
   display: grid;
-  grid-template-columns: 190px auto;
+  grid-template-columns: repeat(2, 160px) repeat(4, auto);
   gap: 10px;
   align-items: end;
+}
+
+.history-filters .ghost-button {
+  white-space: nowrap;
 }
 
 .summary-grid {
